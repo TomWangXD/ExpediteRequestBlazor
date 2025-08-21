@@ -1,0 +1,180 @@
+@import url('open.iconic/font/css/open-iconic-bootstrap.min.css');
+
+html, body {
+    font-family: 'robotoregular',sans-serif;
+}
+
+html, body {
+    height: 100%;
+}
+
+.valid.modified:not([type=checkbox]) {
+    outline: 1px solid #26b050;
+}
+
+.invalid {
+    outline: 1px solid red;
+}
+
+.validation-message {
+    color: red;
+}
+
+#blazor-error-ui {
+    background: lightyellow;
+    bottom: 0;
+    box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
+    display: none;
+    left: 0;
+    padding: 0.6rem 1.25rem 0.7rem 1.25rem;
+    position: fixed;
+    width: 100%;
+    z-index: 1000;
+}
+
+#blazor-error-ui .dismiss {
+    cursor: pointer;
+    position: absolute;
+    right: 0.75rem;
+    top: 0.5rem;
+}
+.pageContent {
+    padding-bottom: 8rem !important;
+}
+
+/* Adds space to the bottom of page content to prevent footer from covering content on the page */
+.content {
+    padding-bottom: 8rem !important;
+}
+/* Sets button color and adds space between buttons on the attachments component */
+.Attachment-btn {
+    background-color: #004a34;
+    border-color: transparent;
+    margin: 0.25rem;
+}
+
+.label-font-size{
+    font-size: 18px;
+}
+
+.tool-metadata-font {
+    font-size: 14px;
+    font-family: "Arial"
+}
+.tool-metadata-border{
+    border: 1px solid black;
+    border-radius: 5px;
+    padding: 8px;
+}
+
+.highlight-bg-gold {
+    background-color: gold !important;
+}
+
+.highlight-bg-gold:hover {
+    background-color: darkgoldenrod !important;
+}
+
+.expedite-table-wrapper {
+    padding-left: 1rem;
+    padding-right: 1rem;
+    overflow-x: auto;
+}
+
+@media print {
+
+    html, body {
+        height: 100%;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: hidden;
+        overflow-y: hidden;
+    }
+
+    .no-print,
+    .no-print * {
+        display: none !important;
+    }
+
+    .form-control, .form-control.nobug {
+        border: 0;
+        outline: 0;
+        box-shadow: none;
+    }
+
+        .form-control.nobug {
+            transition: none; /*-- THIS IS IMPORTANT -- */
+        }
+
+    input, textarea {
+        outline: 0;
+        /* border-bottom: 1px solid black; */
+    }
+
+    .rw-btn {
+        display: none !important;
+    }
+    .nav {
+        display: none !important;
+    }
+    .dx-menu-title {
+        display: none !important;
+    }
+    .dx-menu-bar {
+        display: none !important;
+    }
+    h3 {
+        display: none !important;
+    }
+
+    .rw-widget-container {
+        border: 0;
+        /*border-bottom: 1px solid black;*/
+    }
+
+    .rw-select-bordered {
+        border-left: 0px
+    }
+
+    .print:last-child {
+        page-break-after: auto;
+    }
+    /*border-bottom: 1px solid black;*/
+    .display-alerts {
+        display: none !important;
+    }
+    /* Hide scrollbar for Chrome, Safari and Opera */
+    ::-webkit-scrollbar {
+        width: 0;
+        background: transparent;
+        display: none;
+    }
+
+    .roomyLinks {
+        display: none;
+    }
+    /* Hide scrollbar for IE and Edge */
+    .example {
+        -ms-overflow-style: none;
+    }
+
+    #parent {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        position: relative;
+    }
+
+    #child {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: -17px; /* Increase/Decrease this value for cross-browser compatibility */
+        overflow-y: scroll;
+    }
+
+    .col_entry_0 {
+        display: none;
+    }
+}

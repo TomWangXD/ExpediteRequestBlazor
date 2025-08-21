@@ -1,0 +1,108 @@
+﻿USE [ExpediteRequest]
+GO
+
+/****** Object:  Table [dbo].[Document]    Script Date: 2021-12-09 3:09:21 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[Document](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[Gkey] [uniqueidentifier] NOT NULL,
+	[DocumentNo] [nvarchar](10) NULL,
+	[CoNum] [nvarchar](10) NOT NULL,
+	[CoLine] [smallint] NOT NULL,
+	[CoRelease] [smallint] NOT NULL,
+	[ShelfLifeRequirementFlag] [bit] NOT NULL,
+	[ShelfLifeRequirement] [nvarchar](40) NOT NULL,
+	[PonderosaPack] [bit] NOT NULL,
+	[CurrentDueDate] [bit] NOT NULL,
+	[PartialQuantityAccepted] [bit] NOT NULL,
+	[PartialQuantity] [decimal](19, 8) NOT NULL,
+	[ShipDate] [datetime2](7) NOT NULL,
+	[Fee] [bit] NOT NULL,
+	[Reason] [nvarchar](30) NOT NULL,
+	[Status] [nvarchar](30) NOT NULL,
+	[NewShipDate] [datetime2](7) NULL,
+	[NewShipType] [nvarchar](10) NULL,
+	[Comments] [nvarchar](255) NOT NULL,
+	[CreatedBy] [nvarchar](50) NOT NULL,
+	[Created] [datetime2](7) NOT NULL,
+	[ModifiedBy] [nvarchar](50) NOT NULL,
+	[Modified] [datetime2](7) NOT NULL,
+	[ShipSite] [nvarchar](8) NULL,
+	[Job] [nvarchar](20) NULL,
+	[Ipn] [nvarchar](30) NULL,
+	[IpnDescription] [nvarchar](40) NULL,
+	[OrderDate] [datetime2](7) NULL,
+	[CustomerName] [nvarchar](60) NULL,
+	[QtyOrdered] [decimal](19, 8) NULL,
+	[UM] [nvarchar](3) NULL,
+	[DueDate] [datetime2](7) NULL,
+ CONSTRAINT [PK_Document] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[Document] ADD  CONSTRAINT [DF__Document__GKey__6A30C649]  DEFAULT (newid()) FOR [Gkey]
+GO
+
+ALTER TABLE [dbo].[Document] ADD  CONSTRAINT [DF_Document_CoRelease]  DEFAULT ((0)) FOR [CoRelease]
+GO
+
+ALTER TABLE [dbo].[Document] ADD  CONSTRAINT [DF_Document_ShelfLifeRequirement]  DEFAULT ('') FOR [ShelfLifeRequirement]
+GO
+
+ALTER TABLE [dbo].[Document] ADD  CONSTRAINT [DF__Document__Partia__3B75D760]  DEFAULT ((0)) FOR [PartialQuantityAccepted]
+GO
+
+ALTER TABLE [dbo].[Document] ADD  CONSTRAINT [DF__Document__Partia__3C69FB99]  DEFAULT ((0.0)) FOR [PartialQuantity]
+GO
+
+ALTER TABLE [dbo].[Document] ADD  CONSTRAINT [DF_Document_Comments]  DEFAULT ('') FOR [Comments]
+GO
+
+ALTER TABLE [dbo].[Document] ADD  CONSTRAINT [DF__Document__Create__3D5E1FD2]  DEFAULT (sysdatetime()) FOR [Created]
+GO
+
+
+
+
+
+USE [ExpediteRequest]
+GO
+
+/****** Object:  Table [dbo].[Approval]    Script Date: 2021-12-09 3:09:58 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[Approval](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[Title] [nvarchar](50) NULL,
+	[Signature] [nvarchar](50) NULL,
+	[Date] [datetime] NULL,
+	[Remarks] [ntext] NULL,
+	[DocumentID] [int] NULL,
+	[ApprovalType] [nvarchar](50) NULL,
+	[ApprovalStatus] [nvarchar](50) NULL,
+ CONSTRAINT [PK_Approver] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[Approval]  WITH CHECK ADD  CONSTRAINT [FK_Approvals_Document] FOREIGN KEY([DocumentID])
+REFERENCES [dbo].[Document] ([Id])
+GO
+
+ALTER TABLE [dbo].[Approval] CHECK CONSTRAINT [FK_Approvals_Document]
+GO
+

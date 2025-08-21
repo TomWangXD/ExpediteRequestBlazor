@@ -1,0 +1,2 @@
+﻿# EF Scaffold app
+Scaffold-DbContext Name=ConnectionStrings:DefaultConnection Microsoft.EntityFrameworkCore.SqlServer -OutputDir EFModels -Force

@@ -1,0 +1,16 @@
+﻿.MainLayout {
+    height: 100%;
+}
+
+::deep .page {
+    min-height: 100%;
+    margin-bottom: -100px;
+}
+
+::deep .mud-main-content {
+    padding: calc(var(--mud-appbar-height) + 8px) 8px 108px 8px;
+}
+
+::deep .mud-drawer {
+    position: fixed !important;
+}

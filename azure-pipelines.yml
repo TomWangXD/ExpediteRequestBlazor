@@ -1,0 +1,74 @@
+trigger:
+  branches:
+    include:
+    - main
+    - master
+    - release/*
+    - develop
+    exclude:
+    - feature/*
+
+workspace:
+  clean: all
+
+pool:
+  name: 'Indium Local Agent Pool'
+
+variables:
+  solution: '**/*.sln'
+  buildPlatform: 'Any CPU'
+  buildConfiguration: 'Release'
+  projectName: 'ExpediteRequestAPI'
+
+
+steps:
+- checkout: self
+  fetchDepth: 0
+  
+- task: gitversion/setup@0
+  displayName: Install GitVersion
+  inputs:
+    versionSpec: '5.x'
+    preferLatestVersion: true
+
+- task: gitversion/execute@0
+  displayName: Determine Version
+
+- task: NuGetToolInstaller@1
+
+- task: NuGetAuthenticate@1
+  displayName: 'Authenticate NuGet Feeds'
+
+- task: NuGetCommand@2
+  displayName: 'dotnet restore'
+  inputs:
+    command: 'restore'
+    restoreSolution: '$(Solution)'
+    feedsToUse: 'config'
+    nugetConfigPath: '$(Build.SourcesDirectory)/nuget.config'   
+
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet build $(BuildConfiguration)'
+  inputs:
+    command: 'build'
+    arguments: '--configuration $(BuildConfiguration) '
+
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet test $(BuildConfiguration)'
+  inputs:
+    command: 'test'
+    arguments: '--configuration $(BuildConfiguration)'
+
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet publish $(BuildConfiguration)'
+  inputs:
+    command: 'publish'
+    arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)/$(projectName)-$(Build.BuildId) --no-self-contained'
+    zipAfterPublish: true
+    
+
+- task: PublishBuildArtifacts@1
+  displayName: 'publish artifacts'
+  inputs:
+    targetPath: $(Build.ArtifactStagingDirectory)/$(projectName)-$(Build.BuildId).zip
+    ArtifactName: $(projectName)

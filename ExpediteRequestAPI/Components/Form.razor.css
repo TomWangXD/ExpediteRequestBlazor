@@ -1,0 +1,39 @@
+﻿::deep .dxbl-grid-command-cell > dxbl-grid-header-content > button {
+    color: var(--mud-palette-primary-text) !important;
+    background-color: var(--mud-palette-primary) !important;
+    margin: 2px !important;
+    /* Default Mud Button Styles */
+    padding: 2px 16px !important;
+    font-family: var(--mud-typography-button-family) !important;
+    font-size: var(--mud-typography-button-size) !important;
+    font-weight: var(--mud-typography-button-weight) !important;
+    line-height: var(--mud-typography-button-lineheight) !important;
+    letter-spacing: var(--mud-typography-button-letterspacing) !important;
+    text-transform: var(--mud-typography-button-text-transform) !important;
+    min-width: 64px !important;
+    border-radius: var(--mud-default-borderradius) !important;
+}
+
+    ::deep .dxbl-grid-command-cell > dxbl-grid-header-content > button > span {
+        text-decoration: none !important;
+    }
+
+::deep .dxbl-grid-command-cell > button {
+    color: var(--mud-palette-primary) !important;
+    border: 1px solid var(--mud-palette-primary) !important;
+    margin: 2px !important;
+    /* Default Mud Button Styles */
+    padding: 2px 16px !important;
+    font-family: var(--mud-typography-button-family) !important;
+    font-size: var(--mud-typography-button-size) !important;
+    font-weight: var(--mud-typography-button-weight) !important;
+    line-height: var(--mud-typography-button-lineheight) !important;
+    letter-spacing: var(--mud-typography-button-letterspacing) !important;
+    text-transform: var(--mud-typography-button-text-transform) !important;
+    min-width: 64px !important;
+    border-radius: var(--mud-default-borderradius) !important;
+}
+
+    ::deep .dxbl-grid-command-cell > button > span {
+        text-decoration: none !important;
+    }

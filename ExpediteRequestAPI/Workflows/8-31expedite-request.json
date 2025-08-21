@@ -1,0 +1,1484 @@
+{
+  "$id": "1",
+  "definitionId": "7804aa766fe643f9a6323eacab713577",
+  "versionId": "fb413b72cf0a4730a8d7bae591f4275a",
+  "name": "ExpediteRequest",
+  "displayName": "Expedite Request",
+  "version": 1,
+  "variables": {
+    "$id": "2",
+    "data": {}
+  },
+  "customAttributes": {
+    "$id": "3",
+    "data": {}
+  },
+  "isSingleton": false,
+  "persistenceBehavior": "Suspended",
+  "deleteCompletedInstances": false,
+  "isPublished": true,
+  "isLatest": true,
+  "createdAt": "2023-08-31T12:14:54.7918887Z",
+  "activities": [
+    {
+      "$id": "4",
+      "activityId": "b9c1510e-6d03-4d20-83b4-7525196db2a4",
+      "type": "HttpEndpoint",
+      "name": "WorkflowBaseEndpoint",
+      "displayName": "Workflow Entrypoint",
+      "description": "",
+      "persistWorkflow": false,
+      "loadWorkflowContext": false,
+      "saveWorkflowContext": false,
+      "properties": [
+        {
+          "$id": "5",
+          "name": "Path",
+          "expressions": {
+            "$id": "6",
+            "Literal": "/ExpediteRequest/ProcessDocument"
+          }
+        },
+        {
+          "$id": "7",
+          "name": "Methods",
+          "expressions": {
+            "$id": "8",
+            "Json": "[\"POST\"]"
+          }
+        },
+        {
+          "$id": "9",
+          "name": "ReadContent",
+          "expressions": {
+            "$id": "10",
+            "Literal": "true"
+          }
+        },
+        {
+          "$id": "11",
+          "name": "TargetType",
+          "expressions": {
+            "$id": "12"
+          }
+        },
+        {
+          "$id": "13",
+          "name": "Authorize",
+          "expressions": {
+            "$id": "14"
+          }
+        },
+        {
+          "$id": "15",
+          "name": "Policy",
+          "expressions": {
+            "$id": "16"
+          }
+        }
+      ],
+      "propertyStorageProviders": {
+        "$id": "17"
+      }
+    },
+    {
+      "$id": "18",
+      "activityId": "286e4c42-afdf-4f82-b552-7f1327e169be",
+      "type": "WriteHttpResponse",
+      "displayName": "HTTP Response",
+      "persistWorkflow": false,
+      "loadWorkflowContext": false,
+      "saveWorkflowContext": false,
+      "properties": [
+        {
+          "$id": "19",
+          "name": "Content",
+          "syntax": "JavaScript",
+          "expressions": {
+            "$id": "20",
+            "Literal": "HERE WE ARE",
+            "JavaScript": "\r\nreturn {\r\n    ...document,\r\n    Status : 'Awaiting Production'\r\n    }"
+          }
+        },
+        {
+          "$id": "21",
+          "name": "ContentType",
+          "expressions": {
+            "$id": "22",
+            "Literal": "application/json"
+          }
+        },
+        {
+          "$id": "23",
+          "name": "StatusCode",
+          "expressions": {
+            "$id": "24"
+          }
+        },
+        {
+          "$id": "25",
+          "name": "CharSet",
+          "expressions": {
+            "$id": "26"
+          }
+        },
+        {
+          "$id": "27",
+          "name": "ResponseHeaders",
+          "expressions": {
+            "$id": "28"
+          }
+        }
+      ],
+      "propertyStorageProviders": {
+        "$id": "29"
+      }
+    },
+    {
+      "$id": "30",
+      "activityId": "66f7e994-7542-42a0-89b0-a02bcbf65505",
+      "type": "Finish",
+      "displayName": "Finish",
+      "persistWorkflow": false,
+      "loadWorkflowContext": false,
+      "saveWorkflowContext": false,
+      "properties": [
+        {
+          "$id": "31",
+          "name": "ActivityOutput",
+          "expressions": {
+            "$id": "32"
+          }
+        },
+        {
+          "$id": "33",
+          "name": "OutcomeNames",
+          "expressions": {
+            "$id": "34"
+          }
+        }
+      ],
+      "propertyStorageProviders": {
+        "$id": "35"
+      }
+    },
+    {
+      "$id": "36",
+      "activityId": "d398580b-2f70-450d-abc4-67fe202c72d8",
+      "type": "Fork",
+      "name": "ForkRequestMain",
+      "displayName": "Fork",
+      "description": "Fork the request to do each status comparison",
+      "persistWorkflow": false,
+      "loadWorkflowContext": false,
+      "saveWorkflowContext": false,
+      "properties": [
+        {
+          "$id": "37",
+          "name": "Branches",
+          "expressions": {
+            "$id": "38",
+            "Json": "[\"Submitted\",\"Awaiting Production\",\"Approved\",\"Declined\",\"Date Modified\"]"
+          }
+        }
+      ],
+      "propertyStorageProviders": {
+        "$id": "39"
+      }
+    },
+    {
+      "$id": "40",
+      "activityId": "4f8954c8-a647-4cc2-b930-7d2814b3986b",
+      "type": "SetVariable",
+      "name": "Set Document",
+      "displayName": "Set Document",
+      "description": "Save the document into a variable for usage later",
+      "persistWorkflow": false,
+      "loadWorkflowContext": false,
+      "saveWorkflowContext": false,
+      "properties": [
+        {
+          "$id": "41",
+          "name": "VariableName",
+          "expressions": {
+            "$id": "42",
+            "Literal": "document"
+          }
+        },
+        {
+          "$id": "43",
+          "name": "Value",
+          "syntax": "JavaScript",
+          "expressions": {
+            "$id": "44",
+            "JavaScript": "Document = input.Body.Document\r\nreturn {\r\n    ...Document,\r\n    Id: Document.Id.toString(),\r\n    CoLine: Document.CoLine.toString(),\r\n    CoRelease: Document.CoRelease.toString(),\r\n}"
+          }
+        }
+      ],
+      "propertyStorageProviders": {
+        "$id": "45"
+      }
+    },
+    {
+      "$id": "46",
+      "activityId": "d8b6fb10-a9b1-4e15-b91b-01383a0b01d6",
+      "type": "If",
+      "name": "SubmittedRoute",
+      "displayName": "Sales Submitted",
+      "persistWorkflow": false,
+      "loadWorkflowContext": false,
+      "saveWorkflowContext": false,
+      "properties": [
+        {
+          "$id": "47",
+          "name": "Condition",
+          "syntax": "JavaScript",
+          "expressions": {
+            "$id": "48",
+            "JavaScript": "document.Status === 'Submitted'"
+          }
+        }
+      ],
+      "propertyStorageProviders": {
+        "$id": "49"
+      }
+    },
+    {
+      "$id": "50",
+      "activityId": "2cad0eb6-e74a-4200-9fca-7c817fb5ed57",
+      "type": "If",
+      "displayName": "Production Processed",
+      "persistWorkflow": false,
+      "loadWorkflowContext": false,
+      "saveWorkflowContext": false,
+      "properties": [
+        {
+          "$id": "51",
+          "name": "Condition",
+          "syntax": "JavaScript",
+          "expressions": {
+            "$id": "52",
+            "JavaScript": "document.Status === 'Awaiting Production'"
+          }
+        }
+      ],
+      "propertyStorageProviders": {
+        "$id": "53"
+      }
+    },
+    {
+      "$id": "54",
+      "activityId": "0ee6b651-ec55-49eb-9100-cb3b49ba4e99",
+      "type": "If",
+      "displayName": "If/Else",
+      "persistWorkflow": false,
+      "loadWorkflowContext": false,
+      "saveWorkflowContext": false,
+      "properties": [
+        {
+          "$id": "55",
+          "name": "Condition",
+          "syntax": "JavaScript",
+          "expressions": {
+            "$id": "56",
+            "JavaScript": "productionApproval !== null"
+          }
+        }
+      ],
+      "propertyStorageProviders": {
+        "$id": "57"
+      }
+    },
+    {
+      "$id": "58",
+      "activityId": "2406caae-1aed-4723-96a1-a3c096322dfe",
+      "type": "WriteHttpResponse",
+      "displayName": "HTTP Response",
+      "persistWorkflow": false,
+      "loadWorkflowContext": false,
+      "saveWorkflowContext": false,
+      "properties": [
+        {
+          "$id": "59",
+          "name": "Content",
+          "syntax": "JavaScript",
+          "expressions": {
+            "$id": "60",
+            "JavaScript": "return document"
+          }
+        },
+        {
+          "$id": "61",
+          "name": "ContentType",
+          "expressions": {
+            "$id": "62",
+            "Literal": "application/json"
+          }
+        },
+        {
+          "$id": "63",
+          "name": "StatusCode",
+          "expressions": {
+            "$id": "64"
+          }
+        },
+        {
+          "$id": "65",
+          "name": "CharSet",
+          "expressions": {
+            "$id": "66"
+          }
+        },
+        {
+          "$id": "67",
+          "name": "ResponseHeaders",
+          "expressions": {
+            "$id": "68"
+          }
+        }
+      ],
+      "propertyStorageProviders": {
+        "$id": "69"
+      }
+    },
+    {
+      "$id": "70",
+      "activityId": "d0e16a2c-6ead-41e3-aeef-f63c6ec0c6ea",
+      "type": "Finish",
+      "displayName": "Finish",
+      "persistWorkflow": false,
+      "loadWorkflowContext": false,
+      "saveWorkflowContext": false,
+      "properties": [
+        {
+          "$id": "71",
+          "name": "ActivityOutput",
+          "expressions": {
+            "$id": "72"
+          }
+        },
+        {
+          "$id": "73",
+          "name": "OutcomeNames",
+          "expressions": {
+            "$id": "74"
+          }
+        }
+      ],
+      "propertyStorageProviders": {
+        "$id": "75"
+      }
+    },
+    {
+      "$id": "76",
+      "activityId": "cfd735d5-1bd3-4e85-bb9a-8774122fd850",
+      "type": "WriteHttpResponse",
+      "displayName": "HTTP Response",
+      "persistWorkflow": false,
+      "loadWorkflowContext": false,
+      "saveWorkflowContext": false,
+      "properties": [
+        {
+          "$id": "77",
+          "name": "Content",
+          "syntax": "JavaScript",
+          "expressions": {
+            "$id": "78",
+            "JavaScript": "status = productionApproval?.ApprovalStatus;\r\nStat = \"\"\r\nProgress= false\r\nswitch (status) {\r\n    case 'Approve Total':\r\n    case 'Approve Partial':\r\n    case 'Declined':\r\n        Stat = status\r\n        Progresss = false\r\n        break\r\n    case 'Date Modified':\r\n        amount = document?.NewShipType;\r\n        Stat = status + \" - \" + amount\r\n        Progress = false\r\n        break\r\n}\r\n\r\nreturn  {\r\n    ...document,\r\n    Status: Stat,\r\n    InProgress: Progress\r\n\r\n}"
+          }
+        },
+        {
+          "$id": "79",
+          "name": "ContentType",
+          "expressions": {
+            "$id": "80",
+            "Literal": "application/json"
+          }
+        },
+        {
+          "$id": "81",
+          "name": "StatusCode",
+          "expressions": {
+            "$id": "82"
+          }
+        },
+        {
+          "$id": "83",
+          "name": "CharSet",
+          "expressions": {
+            "$id": "84"
+          }
+        },
+        {
+          "$id": "85",
+          "name": "ResponseHeaders",
+          "expressions": {
+            "$id": "86"
+          }
+        }
+      ],
+      "propertyStorageProviders": {
+        "$id": "87"
+      }
+    },
+    {
+      "$id": "88",
+      "activityId": "b7159bbf-b703-4b5f-a18b-6e3dc72efd25",
+      "type": "SetVariable",
+      "name": "Set Production Approval",
+      "displayName": "Set Production Approval",
+      "persistWorkflow": false,
+      "loadWorkflowContext": false,
+      "saveWorkflowContext": false,
+      "properties": [
+        {
+          "$id": "89",
+          "name": "VariableName",
+          "expressions": {
+            "$id": "90",
+            "Literal": "productionApproval"
+          }
+        },
+        {
+          "$id": "91",
+          "name": "Value",
+          "syntax": "JavaScript",
+          "expressions": {
+            "$id": "92",
+            "JavaScript": "input.Body.ProductionApproval"
+          }
+        }
+      ],
+      "propertyStorageProviders": {
+        "$id": "93"
+      }
+    },
+    {
+      "$id": "94",
+      "activityId": "2aa9d56e-655e-40f6-8493-5b148f940d40",
+      "type": "Finish",
+      "displayName": "Finish",
+      "persistWorkflow": false,
+      "loadWorkflowContext": false,
+      "saveWorkflowContext": false,
+      "properties": [
+        {
+          "$id": "95",
+          "name": "ActivityOutput",
+          "expressions": {
+            "$id": "96"
+          }
+        },
+        {
+          "$id": "97",
+          "name": "OutcomeNames",
+          "expressions": {
+            "$id": "98"
+          }
+        }
+      ],
+      "propertyStorageProviders": {
+        "$id": "99"
+      }
+    },
+    {
+      "$id": "100",
+      "activityId": "ac34fe03-a712-48f0-a0c6-162f43769748",
+      "type": "Join",
+      "displayName": "Join",
+      "persistWorkflow": false,
+      "loadWorkflowContext": false,
+      "saveWorkflowContext": false,
+      "properties": [
+        {
+          "$id": "101",
+          "name": "Mode",
+          "expressions": {
+            "$id": "102"
+          }
+        }
+      ],
+      "propertyStorageProviders": {
+        "$id": "103"
+      }
+    },
+    {
+      "$id": "104",
+      "activityId": "d42d2ab2-260e-4e24-8f77-aea8b77dfab5",
+      "type": "WriteHttpResponse",
+      "displayName": "HTTP Response",
+      "persistWorkflow": false,
+      "loadWorkflowContext": false,
+      "saveWorkflowContext": false,
+      "properties": [
+        {
+          "$id": "105",
+          "name": "Content",
+          "syntax": "JavaScript",
+          "expressions": {
+            "$id": "106",
+            "JavaScript": "return document"
+          }
+        },
+        {
+          "$id": "107",
+          "name": "ContentType",
+          "expressions": {
+            "$id": "108"
+          }
+        },
+        {
+          "$id": "109",
+          "name": "StatusCode",
+          "expressions": {
+            "$id": "110"
+          }
+        },
+        {
+          "$id": "111",
+          "name": "CharSet",
+          "expressions": {
+            "$id": "112"
+          }
+        },
+        {
+          "$id": "113",
+          "name": "ResponseHeaders",
+          "expressions": {
+            "$id": "114"
+          }
+        }
+      ],
+      "propertyStorageProviders": {
+        "$id": "115"
+      }
+    },
+    {
+      "$id": "116",
+      "activityId": "c46b0d88-3d38-415e-a2f1-dbb956895cb8",
+      "type": "Finish",
+      "displayName": "Finish",
+      "persistWorkflow": false,
+      "loadWorkflowContext": false,
+      "saveWorkflowContext": false,
+      "properties": [
+        {
+          "$id": "117",
+          "name": "ActivityOutput",
+          "expressions": {
+            "$id": "118"
+          }
+        },
+        {
+          "$id": "119",
+          "name": "OutcomeNames",
+          "expressions": {
+            "$id": "120"
+          }
+        }
+      ],
+      "propertyStorageProviders": {
+        "$id": "121"
+      }
+    },
+    {
+      "$id": "122",
+      "activityId": "203efe9d-1de8-4af6-b346-cea365eb9bcb",
+      "type": "If",
+      "displayName": "If/Else",
+      "persistWorkflow": false,
+      "loadWorkflowContext": false,
+      "saveWorkflowContext": false,
+      "properties": [
+        {
+          "$id": "123",
+          "name": "Condition",
+          "syntax": "JavaScript",
+          "expressions": {
+            "$id": "124",
+            "JavaScript": "document.Status.includes(\"Approve\")"
+          }
+        }
+      ],
+      "propertyStorageProviders": {
+        "$id": "125"
+      }
+    },
+    {
+      "$id": "126",
+      "activityId": "6cf8da18-a69c-4687-bc2b-193cf4d13d4f",
+      "type": "SendHttpRequest",
+      "displayName": "Send HTTP Request",
+      "persistWorkflow": false,
+      "loadWorkflowContext": false,
+      "saveWorkflowContext": false,
+      "properties": [
+        {
+          "$id": "127",
+          "name": "Url",
+          "syntax": "JavaScript",
+          "expressions": {
+            "$id": "128",
+            "JavaScript": "return WFBody.EmailAPI"
+          }
+        },
+        {
+          "$id": "129",
+          "name": "Method",
+          "expressions": {
+            "$id": "130",
+            "Literal": "POST"
+          }
+        },
+        {
+          "$id": "131",
+          "name": "Content",
+          "syntax": "JavaScript",
+          "expressions": {
+            "$id": "132",
+            "JavaScript": "Reaction = document.Status == \"Approve Total\" ? \"Approved (Total)\" : document.Status == \"Approve Partial\" ? \"Approved (Partial)\" : \"Approved\"\r\n\r\nassigned = WFBody.OrigninatorEmail\r\nEmailSubject = \"Expedite Request is \" + Reaction\r\nEmailSubject += document.CoNum ? \" \" +  document.CoNum : \"\"\r\nEmailSubject += document.CustomerName ? \" - \" + document.CustomerName : \"\"\r\n\r\nbody = \"<p>An entry you entered has been \" + Reaction + \".</p><ul>\"\r\nbody += \"<p><b>Order Information</b><br/>\"\r\nbody += document.CoNum ? \"<b>Order #: </b>\" + document.CoNum + \"<br/>\" : \"\"\r\nbody += document.CoLine != null ? \"<b>Line: </b>\" + document.CoLine + \"<br/>\" : \"\"\r\nbody += document.CoRelease != null ? \"<b>Release: </b>\" + document.CoRelease + \"<br/>\" : \"\"\r\nbody += document.CustomerName ? \"<b>Customer Name: </b>\" + document.CustomerName + \"<br/>\" : \"\"\r\nbody += document.IpnDescription ? \"<b>Description: </b><br />\" + document.IpnDescription + \"</p>\" : \"</p>\"\r\n\r\nbody += document.ShipDate ? \"<p><b>Ship Date: </b>\" + document.ShipDate.split(\"T\")[0] + \"<br/>\" : \"\"\r\nbody += document.NewShipDate ? \"<b>New Ship Date: </b>\" + document.NewShipDate.split(\"T\")[0] + \"<br/>\" : \"\"\r\nbody += document.Status ? \"<b>Expedite Status: </b>\" + document.Status + \"<br/>\" : \"\"\r\nbody += productionApproval.ApprovalStatus ? \"<b>Approver Status: </b>\" + productionApproval.ApprovalStatus + \"<br/>\" : \"\"\r\nbody += productionApproval.Remarks ? \"<b>Approver Comments: </b><br />\" + productionApproval.Remarks + \"</p>\" : \"</p>\"\r\n\r\n\r\nbody += \"</ul><p>To view the this entry in more detail, \"\r\nbody += \"<a href=\\\"https://\" + WFBody.AppLocation + \"/ExpediteRequest/Form/\" + document.Gkey + \"\\\">Click here to view entry</a></p>\"\r\n\r\nlet data = {\r\n    Recipients: assigned,\r\n    Subject:EmailSubject,\r\n    Body:body,\r\n    IsBodyHtml:true\r\n};\r\nreturn JSON.stringify(data);\r\n"
+          }
+        },
+        {
+          "$id": "133",
+          "name": "ContentType",
+          "expressions": {
+            "$id": "134",
+            "Literal": "application/json"
+          }
+        },
+        {
+          "$id": "135",
+          "name": "ReadContent",
+          "expressions": {
+            "$id": "136"
+          }
+        },
+        {
+          "$id": "137",
+          "name": "ResponseContentParserName",
+          "expressions": {
+            "$id": "138"
+          }
+        },
+        {
+          "$id": "139",
+          "name": "ResponseContentTargetType",
+          "expressions": {
+            "$id": "140"
+          }
+        },
+        {
+          "$id": "141",
+          "name": "SupportedStatusCodes",
+          "expressions": {
+            "$id": "142"
+          }
+        },
+        {
+          "$id": "143",
+          "name": "Authorization",
+          "expressions": {
+            "$id": "144"
+          }
+        },
+        {
+          "$id": "145",
+          "name": "RequestHeaders",
+          "expressions": {
+            "$id": "146"
+          }
+        }
+      ],
+      "propertyStorageProviders": {
+        "$id": "147"
+      }
+    },
+    {
+      "$id": "148",
+      "activityId": "d41f381f-3a07-46cb-9e9c-4bc49f9cec71",
+      "type": "WriteHttpResponse",
+      "displayName": "HTTP Response",
+      "persistWorkflow": false,
+      "loadWorkflowContext": false,
+      "saveWorkflowContext": false,
+      "properties": [
+        {
+          "$id": "149",
+          "name": "Content",
+          "syntax": "JavaScript",
+          "expressions": {
+            "$id": "150",
+            "JavaScript": "return document"
+          }
+        },
+        {
+          "$id": "151",
+          "name": "ContentType",
+          "expressions": {
+            "$id": "152",
+            "Literal": "application/json"
+          }
+        },
+        {
+          "$id": "153",
+          "name": "StatusCode",
+          "expressions": {
+            "$id": "154"
+          }
+        },
+        {
+          "$id": "155",
+          "name": "CharSet",
+          "expressions": {
+            "$id": "156"
+          }
+        },
+        {
+          "$id": "157",
+          "name": "ResponseHeaders",
+          "expressions": {
+            "$id": "158"
+          }
+        }
+      ],
+      "propertyStorageProviders": {
+        "$id": "159"
+      }
+    },
+    {
+      "$id": "160",
+      "activityId": "1f612dad-f155-497e-8c6f-dc029b395c86",
+      "type": "Finish",
+      "displayName": "Finish",
+      "persistWorkflow": false,
+      "loadWorkflowContext": false,
+      "saveWorkflowContext": false,
+      "properties": [
+        {
+          "$id": "161",
+          "name": "ActivityOutput",
+          "expressions": {
+            "$id": "162"
+          }
+        },
+        {
+          "$id": "163",
+          "name": "OutcomeNames",
+          "expressions": {
+            "$id": "164"
+          }
+        }
+      ],
+      "propertyStorageProviders": {
+        "$id": "165"
+      }
+    },
+    {
+      "$id": "166",
+      "activityId": "5d99c433-c2c4-434c-bb82-0b995733ab4a",
+      "type": "SetVariable",
+      "displayName": "Set Variable",
+      "persistWorkflow": false,
+      "loadWorkflowContext": false,
+      "saveWorkflowContext": false,
+      "properties": [
+        {
+          "$id": "167",
+          "name": "VariableName",
+          "expressions": {
+            "$id": "168",
+            "Literal": "WFBody"
+          }
+        },
+        {
+          "$id": "169",
+          "name": "Value",
+          "syntax": "JavaScript",
+          "expressions": {
+            "$id": "170",
+            "JavaScript": "input.Body"
+          }
+        }
+      ],
+      "propertyStorageProviders": {
+        "$id": "171"
+      }
+    },
+    {
+      "$id": "172",
+      "activityId": "6f4e7008-f0ee-4e89-b216-679a9ea99908",
+      "type": "If",
+      "displayName": "If/Else",
+      "persistWorkflow": false,
+      "loadWorkflowContext": false,
+      "saveWorkflowContext": false,
+      "properties": [
+        {
+          "$id": "173",
+          "name": "Condition",
+          "syntax": "JavaScript",
+          "expressions": {
+            "$id": "174",
+            "JavaScript": "document.Status.includes(\"Declined\")"
+          }
+        }
+      ],
+      "propertyStorageProviders": {
+        "$id": "175"
+      }
+    },
+    {
+      "$id": "176",
+      "activityId": "d2fdea07-9ad2-4016-9e8b-b48f68f00dd6",
+      "type": "SendHttpRequest",
+      "displayName": "Send HTTP Request",
+      "persistWorkflow": false,
+      "loadWorkflowContext": false,
+      "saveWorkflowContext": false,
+      "properties": [
+        {
+          "$id": "177",
+          "name": "Url",
+          "syntax": "JavaScript",
+          "expressions": {
+            "$id": "178",
+            "JavaScript": "return WFBody.EmailAPI"
+          }
+        },
+        {
+          "$id": "179",
+          "name": "Method",
+          "expressions": {
+            "$id": "180",
+            "Literal": "POST"
+          }
+        },
+        {
+          "$id": "181",
+          "name": "Content",
+          "syntax": "JavaScript",
+          "expressions": {
+            "$id": "182",
+            "JavaScript": "assigned = WFBody.OrigninatorEmail\r\nEmailSubject = \"Expedite Request has been Declined\"\r\nEmailSubject += document.CoNum ? \" \" +  document.CoNum : \"\"\r\nEmailSubject += document.CustomerName ? \" - \" + document.CustomerName : \"\"\r\n\r\nbody = \"<p>An entry you entered has been declined.</p><ul>\"\r\nbody += \"<p><b>Order Information</b>\"\r\nbody += document.CoNum ? \"<b>Order #: </b>\" + document.CoNum + \"<br/>\" : \"\"\r\nbody += document.CoLine != null ? \"<b>Line: </b>\" + document.CoLine + \"<br/>\" : \"\"\r\nbody += document.CoRelease != null ? \"<b>Release: </b>\" + document.CoRelease + \"<br/>\" : \"\"\r\nbody += document.CustomerName ? \"<b>Customer Name: </b>\" + document.CustomerName + \"<br/>\" : \"\"\r\nbody += document.IpnDescription ? \"<b>Description: </b><br />\" + document.IpnDescription + \"</p>\" : \"</p>\"\r\n\r\nbody += document.ShipDate ? \"<p><b>Ship Date: </b>\" + document.ShipDate.split(\"T\")[0] + \"<br/>\" : \"\"\r\nbody += document.NewShipDate ? \"<b>New Ship Date: </b>\" + document.NewShipDate.split(\"T\")[0] + \"<br/>\" : \"\"\r\nbody += document.Status ? \"<b>Expedite Status: </b>\" + document.Status + \"<br/>\" : \"\"\r\nbody += productionApproval.ApprovalStatus ? \"<b>Rejection Status: </b>\" + productionApproval.ApprovalStatus + \"<br/>\" : \"\"\r\nbody += productionApproval.Remarks ? \"<b>Declined Comments: </b><br />\" + productionApproval.Remarks + \"</p>\" : \"</p>\"\r\n\r\n\r\nbody += \"</ul><p>To view the this entry in more detail, \"\r\nbody += \"<a href=\\\"https://\" + WFBody.AppLocation + \"/ExpediteRequest/Form/\" + document.Gkey + \"\\\">Click here to view entry</a></p>\"\r\n\r\nlet data = {\r\n    Recipients: assigned,\r\n    Subject:EmailSubject,\r\n    Body:body,\r\n    IsBodyHtml:true\r\n};\r\nreturn JSON.stringify(data);"
+          }
+        },
+        {
+          "$id": "183",
+          "name": "ContentType",
+          "expressions": {
+            "$id": "184",
+            "Literal": "application/json"
+          }
+        },
+        {
+          "$id": "185",
+          "name": "ReadContent",
+          "expressions": {
+            "$id": "186"
+          }
+        },
+        {
+          "$id": "187",
+          "name": "ResponseContentParserName",
+          "expressions": {
+            "$id": "188"
+          }
+        },
+        {
+          "$id": "189",
+          "name": "ResponseContentTargetType",
+          "expressions": {
+            "$id": "190"
+          }
+        },
+        {
+          "$id": "191",
+          "name": "SupportedStatusCodes",
+          "expressions": {
+            "$id": "192"
+          }
+        },
+        {
+          "$id": "193",
+          "name": "Authorization",
+          "expressions": {
+            "$id": "194"
+          }
+        },
+        {
+          "$id": "195",
+          "name": "RequestHeaders",
+          "expressions": {
+            "$id": "196"
+          }
+        }
+      ],
+      "propertyStorageProviders": {
+        "$id": "197"
+      }
+    },
+    {
+      "$id": "198",
+      "activityId": "80ca0b85-375a-4f49-8632-aed831ea7700",
+      "type": "WriteHttpResponse",
+      "displayName": "HTTP Response",
+      "persistWorkflow": false,
+      "loadWorkflowContext": false,
+      "saveWorkflowContext": false,
+      "properties": [
+        {
+          "$id": "199",
+          "name": "Content",
+          "syntax": "JavaScript",
+          "expressions": {
+            "$id": "200",
+            "JavaScript": "return document"
+          }
+        },
+        {
+          "$id": "201",
+          "name": "ContentType",
+          "expressions": {
+            "$id": "202"
+          }
+        },
+        {
+          "$id": "203",
+          "name": "StatusCode",
+          "expressions": {
+            "$id": "204"
+          }
+        },
+        {
+          "$id": "205",
+          "name": "CharSet",
+          "expressions": {
+            "$id": "206"
+          }
+        },
+        {
+          "$id": "207",
+          "name": "ResponseHeaders",
+          "expressions": {
+            "$id": "208"
+          }
+        }
+      ],
+      "propertyStorageProviders": {
+        "$id": "209"
+      }
+    },
+    {
+      "$id": "210",
+      "activityId": "7fae55d9-e68d-4fbe-8a5b-b116cc9f52ec",
+      "type": "Finish",
+      "displayName": "Finish",
+      "persistWorkflow": false,
+      "loadWorkflowContext": false,
+      "saveWorkflowContext": false,
+      "properties": [
+        {
+          "$id": "211",
+          "name": "ActivityOutput",
+          "expressions": {
+            "$id": "212"
+          }
+        },
+        {
+          "$id": "213",
+          "name": "OutcomeNames",
+          "expressions": {
+            "$id": "214"
+          }
+        }
+      ],
+      "propertyStorageProviders": {
+        "$id": "215"
+      }
+    },
+    {
+      "$id": "216",
+      "activityId": "2747ef04-4fea-425c-a5c2-bea4e753cb46",
+      "type": "If",
+      "displayName": "If/Else",
+      "persistWorkflow": false,
+      "loadWorkflowContext": false,
+      "saveWorkflowContext": false,
+      "properties": [
+        {
+          "$id": "217",
+          "name": "Condition",
+          "syntax": "JavaScript",
+          "expressions": {
+            "$id": "218",
+            "JavaScript": "document.Status.includes(\"Date Modified\")"
+          }
+        }
+      ],
+      "propertyStorageProviders": {
+        "$id": "219"
+      }
+    },
+    {
+      "$id": "220",
+      "activityId": "8203deaa-c079-4d54-9c77-ef642eb0da25",
+      "type": "SendHttpRequest",
+      "displayName": "Send HTTP Request",
+      "persistWorkflow": false,
+      "loadWorkflowContext": false,
+      "saveWorkflowContext": false,
+      "properties": [
+        {
+          "$id": "221",
+          "name": "Url",
+          "syntax": "JavaScript",
+          "expressions": {
+            "$id": "222",
+            "JavaScript": "return WFBody.EmailAPI"
+          }
+        },
+        {
+          "$id": "223",
+          "name": "Method",
+          "expressions": {
+            "$id": "224",
+            "Literal": "POST"
+          }
+        },
+        {
+          "$id": "225",
+          "name": "Content",
+          "syntax": "JavaScript",
+          "expressions": {
+            "$id": "226",
+            "JavaScript": "assigned = WFBody.OrigninatorEmail\r\nEmailSubject = \"Expedite Request has had the Date Modified\"\r\nEmailSubject += document.CoNum ? \" \" +  document.CoNum : \"\"\r\nEmailSubject += document.CustomerName ? \" - \" + document.CustomerName : \"\"\r\n\r\nbody = \"<p>An entry you entered has had the Date Modifed</p><ul>\"\r\nbody += \"<p><b>Order Information</b>\"\r\nbody += document.CoNum ? \"<b>Order #: </b>\" + document.CoNum + \"<br/>\" : \"\"\r\nbody += document.CoLine != null ? \"<b>Line: </b>\" + document.CoLine + \"<br/>\" : \"\"\r\nbody += document.CoRelease != null ? \"<b>Release: </b>\" + document.CoRelease + \"<br/>\" : \"\"\r\nbody += document.CustomerName ? \"<b>Customer Name: </b>\" + document.CustomerName + \"<br/>\" : \"\"\r\nbody += document.IpnDescription ? \"<b>Description: </b><br />\" + document.IpnDescription + \"</p>\" : \"</p>\"\r\n\r\nbody += document.ShipDate ? \"<p><b>Ship Date: </b>\" + document.ShipDate.split(\"T\")[0] + \"<br/>\" : \"\"\r\nbody += document.NewShipDate ? \"<b>New Ship Date: </b>\" + document.NewShipDate.split(\"T\")[0] + \"<br/>\" : \"\"\r\nbody += document.Status ? \"<b>Expedite Status: </b>\" + document.Status + \"<br/>\" : \"\"\r\nbody += productionApproval.ApprovalStatus ? \"<b>Rejection Status: </b>\" + productionApproval.ApprovalStatus + \"<br/>\" : \"\"\r\nbody += productionApproval.Remarks ? \"<b>Rejection Comments: </b><br />\" + productionApproval.Remarks + \"</p>\" : \"</p>\"\r\n\r\n\r\nbody += \"</ul><p>To view the this entry in more detail, \"\r\nbody += \"<a href=\\\"https://\" + WFBody.AppLocation + \"/ExpediteRequest/Form/\" + document.Gkey + \"\\\">Click here to view entry</a></p>\"\r\n\r\nlet data = {\r\n    Recipients: assigned,\r\n    Subject:EmailSubject,\r\n    Body:body,\r\n    IsBodyHtml:true\r\n};\r\nreturn JSON.stringify(data);"
+          }
+        },
+        {
+          "$id": "227",
+          "name": "ContentType",
+          "expressions": {
+            "$id": "228",
+            "Literal": "application/json"
+          }
+        },
+        {
+          "$id": "229",
+          "name": "ReadContent",
+          "expressions": {
+            "$id": "230"
+          }
+        },
+        {
+          "$id": "231",
+          "name": "ResponseContentParserName",
+          "expressions": {
+            "$id": "232"
+          }
+        },
+        {
+          "$id": "233",
+          "name": "ResponseContentTargetType",
+          "expressions": {
+            "$id": "234"
+          }
+        },
+        {
+          "$id": "235",
+          "name": "SupportedStatusCodes",
+          "expressions": {
+            "$id": "236"
+          }
+        },
+        {
+          "$id": "237",
+          "name": "Authorization",
+          "expressions": {
+            "$id": "238"
+          }
+        },
+        {
+          "$id": "239",
+          "name": "RequestHeaders",
+          "expressions": {
+            "$id": "240"
+          }
+        }
+      ],
+      "propertyStorageProviders": {
+        "$id": "241"
+      }
+    },
+    {
+      "$id": "242",
+      "activityId": "2c7fe5c3-10d3-4274-a889-9a12a00b52a3",
+      "type": "WriteHttpResponse",
+      "displayName": "HTTP Response",
+      "persistWorkflow": false,
+      "loadWorkflowContext": false,
+      "saveWorkflowContext": false,
+      "properties": [
+        {
+          "$id": "243",
+          "name": "Content",
+          "syntax": "JavaScript",
+          "expressions": {
+            "$id": "244",
+            "JavaScript": "return document"
+          }
+        },
+        {
+          "$id": "245",
+          "name": "ContentType",
+          "expressions": {
+            "$id": "246"
+          }
+        },
+        {
+          "$id": "247",
+          "name": "StatusCode",
+          "expressions": {
+            "$id": "248"
+          }
+        },
+        {
+          "$id": "249",
+          "name": "CharSet",
+          "expressions": {
+            "$id": "250"
+          }
+        },
+        {
+          "$id": "251",
+          "name": "ResponseHeaders",
+          "expressions": {
+            "$id": "252"
+          }
+        }
+      ],
+      "propertyStorageProviders": {
+        "$id": "253"
+      }
+    },
+    {
+      "$id": "254",
+      "activityId": "0f95dd27-f051-4cff-84ff-7338aa8a15e0",
+      "type": "Finish",
+      "displayName": "Finish",
+      "persistWorkflow": false,
+      "loadWorkflowContext": false,
+      "saveWorkflowContext": false,
+      "properties": [
+        {
+          "$id": "255",
+          "name": "ActivityOutput",
+          "expressions": {
+            "$id": "256"
+          }
+        },
+        {
+          "$id": "257",
+          "name": "OutcomeNames",
+          "expressions": {
+            "$id": "258"
+          }
+        }
+      ],
+      "propertyStorageProviders": {
+        "$id": "259"
+      }
+    },
+    {
+      "$id": "260",
+      "activityId": "46a98862-ed79-4fa7-9af0-19389eacf58e",
+      "type": "SendHttpRequest",
+      "displayName": "Send HTTP Request",
+      "persistWorkflow": false,
+      "loadWorkflowContext": false,
+      "saveWorkflowContext": false,
+      "properties": [
+        {
+          "$id": "261",
+          "name": "Url",
+          "syntax": "JavaScript",
+          "expressions": {
+            "$id": "262",
+            "JavaScript": "return WFBody.EmailAPI"
+          }
+        },
+        {
+          "$id": "263",
+          "name": "Method",
+          "expressions": {
+            "$id": "264",
+            "Literal": "POST"
+          }
+        },
+        {
+          "$id": "265",
+          "name": "Content",
+          "syntax": "JavaScript",
+          "expressions": {
+            "$id": "266",
+            "JavaScript": "status = productionApproval?.ApprovalStatus;\r\n\r\nResponse = \"\";\r\nEmailSubject = \"\";\r\nbody = \"\";\r\n\r\n\r\nswitch (status) {\r\n    case 'Approve Total':\r\n\t\tResponse = \"Approved (Total)\"\r\n\t\tEmailSubject = \"Expedite Request is Approved (Total)\"\r\n\t\tbody = \"<p>An entry you entered has been Approved (Total).</p><ul>\"\r\n    case 'Approve Partial':\r\n\t\tResponse = \"Approved (Partial)\"\r\n\t\tEmailSubject = \"Expedite Request is Approved (Partial)\"\r\n\t\tbody = \"<p>An entry you entered has been Approved (Partial).</p><ul>\"\r\n    case 'Declined':\r\n        Response = \"Declined\"\r\n\t\tEmailSubject = \"Expedite Request is Declined\"\r\n\t\tbody = \"<p>An entry you entered has been Declined.</p><ul>\"\r\n    case 'Date Modified':\r\n        Response = \"Date Modified\"\r\n\t\tEmailSubject = \"Expedite Request has had the Date Modified\"\r\n\t\tbody = \"<p>An entry you entered has had the Date Modifed</p><ul>\"\r\n}\r\n\r\nassigned = WFBody.OrigninatorEmail\r\nEmailSubject += document.CoNum ? \" \" +  document.CoNum : \"\"\r\nEmailSubject += document.CustomerName ? \" - \" + document.CustomerName : \"\"\r\n\r\nbody += \"<p><b>Order Information</b>\"\r\nbody += document.CoNum ? \"<b>Order #: </b>\" + document.CoNum + \"<br/>\" : \"\"\r\nbody += document.CoLine != null ? \"<b>Line: </b>\" + document.CoLine + \"<br/>\" : \"\"\r\nbody += document.CoRelease != null ? \"<b>Release: </b>\" + document.CoRelease + \"<br/>\" : \"\"\r\nbody += document.CustomerName ? \"<b>Customer Name: </b>\" + document.CustomerName + \"<br/>\" : \"\"\r\nbody += document.IpnDescription ? \"<b>Description: </b><br />\" + document.IpnDescription + \"</p>\" : \"</p>\"\r\n\r\nbody += document.ShipDate ? \"<p><b>Ship Date: </b>\" + document.ShipDate.split(\"T\")[0] + \"<br/>\" : \"\"\r\nbody += document.NewShipDate ? \"<b>New Ship Date: </b>\" + document.NewShipDate.split(\"T\")[0] + \"<br/>\" : \"\"\r\nbody += document.Status ? \"<b>Expedite Status: </b>\" + document.Status + \"<br/>\" : \"\"\r\nbody += productionApproval.ApprovalStatus ? \"<b>Rejection Status: </b>\" + productionApproval.ApprovalStatus + \"<br/>\" : \"\"\r\nbody += productionApproval.Remarks ? \"<b>Rejection Comments: </b><br />\" + productionApproval.Remarks + \"</p>\" : \"</p>\"\r\n\r\n\r\nbody += \"</ul><p>To view the this entry in more detail, \"\r\nbody += \"<a href=\\\"https://\" + WFBody.AppLocation + \"/ExpediteRequest/Form/\" + document.Gkey + \"\\\">Click here to view entry</a></p>\"\r\n\r\nlet data = {\r\n    Recipients: assigned,\r\n    Subject:EmailSubject,\r\n    Body:body,\r\n    IsBodyHtml:true\r\n};\r\nreturn JSON.stringify(data);"
+          }
+        },
+        {
+          "$id": "267",
+          "name": "ContentType",
+          "expressions": {
+            "$id": "268",
+            "Literal": "application/json"
+          }
+        },
+        {
+          "$id": "269",
+          "name": "ReadContent",
+          "expressions": {
+            "$id": "270"
+          }
+        },
+        {
+          "$id": "271",
+          "name": "ResponseContentParserName",
+          "expressions": {
+            "$id": "272"
+          }
+        },
+        {
+          "$id": "273",
+          "name": "ResponseContentTargetType",
+          "expressions": {
+            "$id": "274"
+          }
+        },
+        {
+          "$id": "275",
+          "name": "SupportedStatusCodes",
+          "expressions": {
+            "$id": "276"
+          }
+        },
+        {
+          "$id": "277",
+          "name": "Authorization",
+          "expressions": {
+            "$id": "278"
+          }
+        },
+        {
+          "$id": "279",
+          "name": "RequestHeaders",
+          "expressions": {
+            "$id": "280"
+          }
+        }
+      ],
+      "propertyStorageProviders": {
+        "$id": "281"
+      }
+    }
+  ],
+  "connections": [
+    {
+      "$id": "282",
+      "sourceActivityId": "286e4c42-afdf-4f82-b552-7f1327e169be",
+      "targetActivityId": "66f7e994-7542-42a0-89b0-a02bcbf65505",
+      "outcome": "Done"
+    },
+    {
+      "$id": "283",
+      "sourceActivityId": "b9c1510e-6d03-4d20-83b4-7525196db2a4",
+      "targetActivityId": "4f8954c8-a647-4cc2-b930-7d2814b3986b",
+      "outcome": "Done"
+    },
+    {
+      "$id": "284",
+      "sourceActivityId": "d398580b-2f70-450d-abc4-67fe202c72d8",
+      "targetActivityId": "d8b6fb10-a9b1-4e15-b91b-01383a0b01d6",
+      "outcome": "Submitted"
+    },
+    {
+      "$id": "285",
+      "sourceActivityId": "d8b6fb10-a9b1-4e15-b91b-01383a0b01d6",
+      "targetActivityId": "286e4c42-afdf-4f82-b552-7f1327e169be",
+      "outcome": "True"
+    },
+    {
+      "$id": "286",
+      "sourceActivityId": "d398580b-2f70-450d-abc4-67fe202c72d8",
+      "targetActivityId": "2cad0eb6-e74a-4200-9fca-7c817fb5ed57",
+      "outcome": "Awaiting Production"
+    },
+    {
+      "$id": "287",
+      "sourceActivityId": "2cad0eb6-e74a-4200-9fca-7c817fb5ed57",
+      "targetActivityId": "0ee6b651-ec55-49eb-9100-cb3b49ba4e99",
+      "outcome": "True"
+    },
+    {
+      "$id": "288",
+      "sourceActivityId": "0ee6b651-ec55-49eb-9100-cb3b49ba4e99",
+      "targetActivityId": "2406caae-1aed-4723-96a1-a3c096322dfe",
+      "outcome": "False"
+    },
+    {
+      "$id": "289",
+      "sourceActivityId": "2406caae-1aed-4723-96a1-a3c096322dfe",
+      "targetActivityId": "d0e16a2c-6ead-41e3-aeef-f63c6ec0c6ea",
+      "outcome": "Done"
+    },
+    {
+      "$id": "290",
+      "sourceActivityId": "4f8954c8-a647-4cc2-b930-7d2814b3986b",
+      "targetActivityId": "b7159bbf-b703-4b5f-a18b-6e3dc72efd25",
+      "outcome": "Done"
+    },
+    {
+      "$id": "291",
+      "sourceActivityId": "cfd735d5-1bd3-4e85-bb9a-8774122fd850",
+      "targetActivityId": "2aa9d56e-655e-40f6-8493-5b148f940d40",
+      "outcome": "Done"
+    },
+    {
+      "$id": "292",
+      "sourceActivityId": "d8b6fb10-a9b1-4e15-b91b-01383a0b01d6",
+      "targetActivityId": "ac34fe03-a712-48f0-a0c6-162f43769748",
+      "outcome": "False"
+    },
+    {
+      "$id": "293",
+      "sourceActivityId": "2cad0eb6-e74a-4200-9fca-7c817fb5ed57",
+      "targetActivityId": "ac34fe03-a712-48f0-a0c6-162f43769748",
+      "outcome": "False"
+    },
+    {
+      "$id": "294",
+      "sourceActivityId": "ac34fe03-a712-48f0-a0c6-162f43769748",
+      "targetActivityId": "d42d2ab2-260e-4e24-8f77-aea8b77dfab5",
+      "outcome": "Done"
+    },
+    {
+      "$id": "295",
+      "sourceActivityId": "d42d2ab2-260e-4e24-8f77-aea8b77dfab5",
+      "targetActivityId": "c46b0d88-3d38-415e-a2f1-dbb956895cb8",
+      "outcome": "Done"
+    },
+    {
+      "$id": "296",
+      "sourceActivityId": "d398580b-2f70-450d-abc4-67fe202c72d8",
+      "targetActivityId": "203efe9d-1de8-4af6-b346-cea365eb9bcb",
+      "outcome": "Approved"
+    },
+    {
+      "$id": "297",
+      "sourceActivityId": "203efe9d-1de8-4af6-b346-cea365eb9bcb",
+      "targetActivityId": "ac34fe03-a712-48f0-a0c6-162f43769748",
+      "outcome": "False"
+    },
+    {
+      "$id": "298",
+      "sourceActivityId": "203efe9d-1de8-4af6-b346-cea365eb9bcb",
+      "targetActivityId": "6cf8da18-a69c-4687-bc2b-193cf4d13d4f",
+      "outcome": "True"
+    },
+    {
+      "$id": "299",
+      "sourceActivityId": "6cf8da18-a69c-4687-bc2b-193cf4d13d4f",
+      "targetActivityId": "d41f381f-3a07-46cb-9e9c-4bc49f9cec71",
+      "outcome": "Done"
+    },
+    {
+      "$id": "300",
+      "sourceActivityId": "d41f381f-3a07-46cb-9e9c-4bc49f9cec71",
+      "targetActivityId": "1f612dad-f155-497e-8c6f-dc029b395c86",
+      "outcome": "Done"
+    },
+    {
+      "$id": "301",
+      "sourceActivityId": "b7159bbf-b703-4b5f-a18b-6e3dc72efd25",
+      "targetActivityId": "5d99c433-c2c4-434c-bb82-0b995733ab4a",
+      "outcome": "Done"
+    },
+    {
+      "$id": "302",
+      "sourceActivityId": "5d99c433-c2c4-434c-bb82-0b995733ab4a",
+      "targetActivityId": "d398580b-2f70-450d-abc4-67fe202c72d8",
+      "outcome": "Done"
+    },
+    {
+      "$id": "303",
+      "sourceActivityId": "d398580b-2f70-450d-abc4-67fe202c72d8",
+      "targetActivityId": "6f4e7008-f0ee-4e89-b216-679a9ea99908",
+      "outcome": "Declined"
+    },
+    {
+      "$id": "304",
+      "sourceActivityId": "6f4e7008-f0ee-4e89-b216-679a9ea99908",
+      "targetActivityId": "d2fdea07-9ad2-4016-9e8b-b48f68f00dd6",
+      "outcome": "True"
+    },
+    {
+      "$id": "305",
+      "sourceActivityId": "d2fdea07-9ad2-4016-9e8b-b48f68f00dd6",
+      "targetActivityId": "80ca0b85-375a-4f49-8632-aed831ea7700",
+      "outcome": "Done"
+    },
+    {
+      "$id": "306",
+      "sourceActivityId": "80ca0b85-375a-4f49-8632-aed831ea7700",
+      "targetActivityId": "7fae55d9-e68d-4fbe-8a5b-b116cc9f52ec",
+      "outcome": "Done"
+    },
+    {
+      "$id": "307",
+      "sourceActivityId": "6f4e7008-f0ee-4e89-b216-679a9ea99908",
+      "targetActivityId": "ac34fe03-a712-48f0-a0c6-162f43769748",
+      "outcome": "False"
+    },
+    {
+      "$id": "308",
+      "sourceActivityId": "d398580b-2f70-450d-abc4-67fe202c72d8",
+      "targetActivityId": "2747ef04-4fea-425c-a5c2-bea4e753cb46",
+      "outcome": "Date Modified"
+    },
+    {
+      "$id": "309",
+      "sourceActivityId": "2747ef04-4fea-425c-a5c2-bea4e753cb46",
+      "targetActivityId": "ac34fe03-a712-48f0-a0c6-162f43769748",
+      "outcome": "False"
+    },
+    {
+      "$id": "310",
+      "sourceActivityId": "2747ef04-4fea-425c-a5c2-bea4e753cb46",
+      "targetActivityId": "8203deaa-c079-4d54-9c77-ef642eb0da25",
+      "outcome": "True"
+    },
+    {
+      "$id": "311",
+      "sourceActivityId": "8203deaa-c079-4d54-9c77-ef642eb0da25",
+      "targetActivityId": "2c7fe5c3-10d3-4274-a889-9a12a00b52a3",
+      "outcome": "Done"
+    },
+    {
+      "$id": "312",
+      "sourceActivityId": "2c7fe5c3-10d3-4274-a889-9a12a00b52a3",
+      "targetActivityId": "0f95dd27-f051-4cff-84ff-7338aa8a15e0",
+      "outcome": "Done"
+    },
+    {
+      "$id": "313",
+      "sourceActivityId": "0ee6b651-ec55-49eb-9100-cb3b49ba4e99",
+      "targetActivityId": "46a98862-ed79-4fa7-9af0-19389eacf58e",
+      "outcome": "True"
+    },
+    {
+      "$id": "314",
+      "sourceActivityId": "46a98862-ed79-4fa7-9af0-19389eacf58e",
+      "targetActivityId": "cfd735d5-1bd3-4e85-bb9a-8774122fd850",
+      "outcome": "Done"
+    }
+  ],
+  "id": "fb413b72cf0a4730a8d7bae591f4275a"
+}

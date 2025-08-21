@@ -1,0 +1,28 @@
+﻿@page "/ExpediteForm"
+@page "/ExpediteForm/{Gkey}"
+
+@using Indium.Common.Models
+@using ExpediteRequestAPI.Components
+@using MudBlazor
+
+@inject IDocumentRepository documentRepository
+
+<Form Data="document"/>
+
+@code {
+
+    [Parameter]
+    public string? Gkey { get; set; }
+
+    public Guid? ConvertedGkey { get; set; }
+
+    private MudForm _form = default!;
+    private Document document = new();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        ConvertedGkey = Guid.TryParse(Gkey, out var parsed) ? parsed : null;
+
+        document = await documentRepository.RetrieveObject(ConvertedGkey ?? Guid.NewGuid());
+    }
+}

@@ -1,0 +1,383 @@
+﻿@using ExpediteRequestAPI.Modules.Interfaces
+@using MudBlazor;
+@using DevExpress.Blazor
+@using Microsoft.AspNetCore.Components.Forms
+
+@inject IDocumentRepository documentRepository
+@inject IDropdownRepository dropdownRepository
+@inject IExpediteRequestRepository expediteRequestRepository
+@inject ILogger<Form> logger
+@inject ISnackbar snackbar
+@inject NavigationManager navigationManager
+
+<MudText Align="Align.Center" Typo="Typo.h3">Expedite Form</MudText>
+<div class="container">
+    <div class="col mt-4">
+        <EditForm Context="formContext" Model="Data">
+            <DxFormLayout  SizeMode="SizeMode.Large" CaptionPosition="CaptionPosition.Vertical">
+                <DxFormLayoutItem Caption="Order Number" ColSpanSm="6" ColSpanMd="6" ColSpanLg="4" ColSpanXl="4" ColSpanXxl="4">
+                    <DxTextBox Text="@Data.CoNum" 
+                    TextChanged="@(async(value) => {
+                                   Data.CoNum = value;
+                                   await GetLines();
+                                })"
+                    TextExpression="@(() => Data.CoNum)"
+                    SizeMode="SizeMode.Large"
+                    ReadOnly=false/> 
+
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Line" ColSpanSm="6" ColSpanMd="6" ColSpanLg="4" ColSpanXl="4" ColSpanXxl="4">
+                    <DxComboBox 
+                    Value=Data.CoLine
+                    ValueChanged="(async(value) => {
+                        Data.CoLine = value;
+                        await GetReleases();
+                    })"
+                    ValueExpression="(() => Data.CoLine)"
+                    Data="coLines"
+                    TData="short" 
+                    TValue="short"
+                    ReadOnly=false
+                    SizeMode="SizeMode.Large"/>
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Release" ColSpanSm="6" ColSpanMd="6" ColSpanLg="4" ColSpanXl="4" ColSpanXxl="4">
+                    <DxComboBox Value=Data.CoRelease
+                    ValueChanged="(async(value) => {
+                                    Data.CoRelease = value;
+                                    await GetSytelineData();
+
+                                })"
+                    ValueExpression="(() => Data.CoRelease)"
+                    Data="coReleases"
+                    TData="short"
+                    TValue="short"
+                    ReadOnly=false
+                    SizeMode="SizeMode.Large" />
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Ship Site" ColSpanSm="6" ColSpanMd="6" ColSpanLg="4" ColSpanXl="4" ColSpanXxl="4">
+                    <DxTextBox @bind-Text="Data.ShipSite"
+                    SizeMode="SizeMode.Large"
+                    ReadOnly=true />
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Job Number" ColSpanSm="6" ColSpanMd="6" ColSpanLg="4" ColSpanXl="4" ColSpanXxl="4">
+                    <DxTextBox @bind-Text="Data.Job"
+                    SizeMode="SizeMode.Large"
+                    ReadOnly=true />
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Ipn" ColSpanSm="6" ColSpanMd="6" ColSpanLg="4" ColSpanXl="4" ColSpanXxl="4">
+                    <DxTextBox @bind-Text="Data.Ipn"
+                    SizeMode="SizeMode.Large"
+                    ReadOnly=true />
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="IPN Description" ColSpanSm="6" ColSpanMd="6" ColSpanLg="4" ColSpanXl="4" ColSpanXxl="4">
+                    <DxTextBox @bind-Text="Data.IpnDescription"
+                    SizeMode="SizeMode.Large"
+                    ReadOnly=true />
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Order Date" ColSpanSm="6" ColSpanMd="6" ColSpanLg="4" ColSpanXl="4" ColSpanXxl="4">
+                    <DxDateEdit @bind-Date="Data.OrderDate"
+                    SizeMode="SizeMode.Large"
+                    ReadOnly=true />
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Customer Name" ColSpanSm="6" ColSpanMd="6" ColSpanLg="4" ColSpanXl="4" ColSpanXxl="4">
+                    <DxTextBox @bind-Text="Data.CustomerName"
+                    SizeMode="SizeMode.Large"
+                    ReadOnly=true />
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Qty Ordered" ColSpanSm="6" ColSpanMd="6" ColSpanLg="4" ColSpanXl="4" ColSpanXxl="4">
+                    <DxSpinEdit @bind-Value="Data.QtyOrdered"
+                    SizeMode="SizeMode.Large"
+                    ReadOnly=true />
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="UOM" ColSpanSm="6" ColSpanMd="6" ColSpanLg="4" ColSpanXl="4" ColSpanXxl="4">
+                    <DxTextBox @bind-Text="Data.Um"
+                    SizeMode="SizeMode.Large"
+                    ReadOnly=true />
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Due Date"ColSpanSm="6" ColSpanMd="6" ColSpanLg="4" ColSpanXl="4" ColSpanXxl="4">
+                    <DxDateEdit @bind-Date="Data.DueDate"
+                    SizeMode="SizeMode.Large"
+                    ReadOnly=true />
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Planner Code" ColSpanSm="6" ColSpanMd="6" ColSpanLg="4" ColSpanXl="4" ColSpanXxl="4">
+                    <DxTextBox @bind-Text="Data.PlanCode"
+                    SizeMode="SizeMode.Large"
+                    ReadOnly=true />
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Partial Quantity Accepted" ColSpanSm="6" ColSpanMd="6" ColSpanLg="4" ColSpanXl="4" ColSpanXxl="4">
+                    <DxCheckBox @bind-Checked="Data.PartialQuantityAccepted"
+                    SizeMode="SizeMode.Large"
+                    ReadOnly=false />
+                </DxFormLayoutItem>
+                @if (Data.PartialQuantityAccepted)
+                {
+                    <DxFormLayoutItem Caption="Partial Quantity" ColSpanSm="6" ColSpanMd="6" ColSpanLg="4" ColSpanXl="4" ColSpanXxl="4">
+                        <DxSpinEdit @bind-Value="Data.PartialQuantity"
+                        SizeMode="SizeMode.Large"
+                        ReadOnly=false/>
+                    </DxFormLayoutItem>
+                }
+                @if(Data.Id != 0)
+                {
+                    <DxFormLayoutItem Caption="DPAs" ColSpanSm="6" ColSpanMd="6" ColSpanLg="4" ColSpanXl="4" ColSpanXxl="4">
+                        <DxCheckBox @bind-Checked="Data.Dpas"
+                        SizeMode="SizeMode.Large"
+                        ReadOnly=false />
+                    </DxFormLayoutItem>
+                }
+                <DxFormLayoutItem Caption="Fee" ColSpanSm="6" ColSpanMd="6" ColSpanLg="4" ColSpanXl="4" ColSpanXxl="4">
+                    <DxCheckBox @bind-Checked="Data.Fee"
+                    SizeMode="SizeMode.Large"
+                    ReadOnly=false />
+                </DxFormLayoutItem>
+
+                <DxFormLayoutItem Caption="Request Ship Date" ColSpanSm="6" ColSpanMd="6" ColSpanLg="4" ColSpanXl="4" ColSpanXxl="4">
+                    <DxDateEdit @bind-Date="Data.ShipDate"
+                    SizeMode="SizeMode.Large"
+                    ReadOnly=false />
+                </DxFormLayoutItem>
+
+                <DxFormLayoutItem Caption="Reasons" ColSpanSm="6" ColSpanMd="6" ColSpanLg="4" ColSpanXl="4" ColSpanXxl="4">
+                    <DxComboBox @bind-Value=Data.Reason
+                    Data="@reasons"
+                    TData="string"
+                    TValue="string"
+                    ReadOnly=false
+                    SizeMode="SizeMode.Large" />
+                </DxFormLayoutItem>
+
+                <DxFormLayoutItem Caption="Expedite Status" ColSpanSm="6" ColSpanMd="6" ColSpanLg="4" ColSpanXl="4" ColSpanXxl="4">
+                    <DxComboBox @bind-Value=Data.Status
+                    Data="statuses"
+                    TData="string"
+                    TValue="string"
+                    ReadOnly=true
+                    SizeMode="SizeMode.Large" />
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Comments" ColSpanSm="12" ColSpanMd="12" ColSpanLg="12" ColSpanXl="12" ColSpanXxl="12">
+                    <DxMemo @bind-Text="Data.Comments"
+                    ClearButtonDisplayMode="DataEditorClearButtonDisplayMode.Auto"
+                    NullText=""
+                    SizeMode="SizeMode.Large"
+                    Rows="5"
+                    ReadOnly="false" />
+                </DxFormLayoutItem>
+
+                @if (Data.Id != 0)
+                {
+                    <DxFormLayoutItem Caption="Approver" ColSpanSm="6" ColSpanMd="6" ColSpanLg="6" ColSpanXl="6" ColSpanXxl="6">
+                        <DxTextBox @bind-Text="@Approver"
+                        SizeMode="SizeMode.Large"
+                        ReadOnly=false />
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem Caption="Approval Status" ColSpanSm="6" ColSpanMd="6" ColSpanLg="6" ColSpanXl="6" ColSpanXxl="6">
+                        <DxComboBox @bind-Value="@ApprovalStatus"
+                        Data="approvalStatuses"
+                        SizeMode="SizeMode.Large"
+                        ReadOnly=false />
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem Caption="Approver Comments" ColSpanSm="12" ColSpanMd="12" ColSpanLg="12" ColSpanXl="12" ColSpanXxl="12">
+                        <DxMemo @bind-Text="@ApproverComments"
+                        SizeMode="SizeMode.Large"
+                        ReadOnly=false
+                        Rows="4"/>
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem ColSpanSm="6" ColSpanMd="6" ColSpanLg="4" ColSpanXl="4" ColSpanXxl="4" />
+                    <DxFormLayoutItem ColSpanSm="6" ColSpanMd="6" ColSpanLg="4" ColSpanXl="4" ColSpanXxl="4" />
+
+                    <DxFormLayoutItem Caption="Created Date" ColSpanSm="6" ColSpanMd="6" ColSpanLg="4" ColSpanXl="4" ColSpanXxl="4">
+                        <DxDateEdit @bind-Date="Data.Created"
+                        SizeMode="SizeMode.Large"
+                        ReadOnly=true />
+                    </DxFormLayoutItem>
+                }
+
+                @if(Data.Id == 0)
+                {
+                    <DxFormLayoutItem ColSpanSm="6" ColSpanMd="6" ColSpanLg="4" ColSpanXl="4" ColSpanXxl="4">
+                        <DxButton Context="buttonCancel" Click="@(() => Cancel())" SizeMode="SizeMode.Large">Cancel</DxButton>
+                    </DxFormLayoutItem>
+
+                    <DxFormLayoutItem ColSpanSm="6" ColSpanMd="6" ColSpanLg="4" ColSpanXl="4" ColSpanXxl="4">
+                        <DxButton Context="buttonSave" Click="@(() => Save())" SizeMode="SizeMode.Large">Save</DxButton>
+                    </DxFormLayoutItem>
+                }
+                else
+                {
+                    <DxFormLayoutItem ColSpanSm="6" ColSpanMd="6" ColSpanLg="4" ColSpanXl="4" ColSpanXxl="4">
+                        <DxButton Context="buttonApprove" Click="@(() => Save("Approved"))" SizeMode="SizeMode.Large">Approve</DxButton>
+                    </DxFormLayoutItem>
+
+                    <DxFormLayoutItem ColSpanSm="6" ColSpanMd="6" ColSpanLg="4" ColSpanXl="4" ColSpanXxl="4">
+                        <DxButton Context="buttonDecline" Click="@(() => Save("Declined"))" SizeMode="SizeMode.Large">Decline</DxButton>
+                    </DxFormLayoutItem>
+                }
+            </DxFormLayout>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public Document? Data { get; set; }
+
+    private List<short> coLines = new();
+    private List<short> coReleases = new();
+    private List<string> reasons = new();
+    private List<string> statuses = new();
+    private List<string> approvalStatuses = new();
+
+    private string Approver
+    {
+        get
+        {
+            if(Data.Approvals is not null && Data.Approvals.Count > 0)
+            {
+                return Data.Approvals.ToList()[0].Signature;
+            }
+            return string.Empty;
+        }
+        set
+        {
+
+        }
+    }
+    private string _approver;
+
+
+    private string ApprovalStatus
+    {
+        get
+        {
+            if (Data.Approvals is not null && Data.Approvals.Count > 0)
+            {
+                return Data.Approvals.ToList()[0].ApprovalStatus;
+            }
+            return string.Empty;
+        }
+        set
+        {
+            if(value is not null)
+            {
+                _approvalStatus = value;
+                Data.Approvals.ToList()[0].ApprovalStatus = value;
+                Data.Status = value;
+                if(value is not null && value.Contains("Approve"))
+                {
+                    Data.Status = "Approved";
+                }
+            }
+        }
+    }
+    private string _approvalStatus;
+
+    private string ApproverComments
+    {
+        get
+        {
+            if (Data.Approvals is not null && Data.Approvals.Count > 0)
+            {
+                return Data.Approvals.ToList()[0].Remarks;
+            }
+            return string.Empty;
+        }
+        set
+        {
+            if(!string.IsNullOrEmpty(value))
+            {
+                Data.Approvals.ToList()[0].Remarks = value;
+            }
+            else
+            {
+                Data.Approvals.ToList()[0].Remarks = string.Empty;
+            }
+
+        }
+    }
+    private string _approverComments;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if(Data is null) Data = new();
+        
+        else if (Data.Approvals is null)
+        {
+            Data.Approvals = new List<Approval>() { new Approval() };
+        }
+
+        reasons = await dropdownRepository.GetExpediteReasons();
+        approvalStatuses = await dropdownRepository.GetApprovalStatuses();
+    }
+
+    private async Task Save(string response = "")
+    {
+        try
+        {
+            snackbar.Add("Saving...", Severity.Info);
+
+            if (Data.Id != 0)
+            {
+                Data.Status = response;
+            }
+            await documentRepository.HandleObject(Data);
+
+            
+            snackbar.Add("Saved!", Severity.Success);
+            NavigateToHome();
+        }
+        catch(Exception ex)
+        {
+            snackbar.Add("There was an error saving the request", Severity.Error);
+            logger.LogError($"Error saving data.\n\nOrder Number: {Data.CoNum}\nLines: {Data.CoLine}\nReleases: {Data.CoRelease}\n" + ex.ToString());
+        }
+    }
+
+    private void Cancel() => NavigateToHome();
+
+
+    private async Task GetLines()
+    {
+        try
+        {
+            coLines = await expediteRequestRepository.GetOrderLines(Data.CoNum);
+            if(coLines is null || coLines.Count == 0)
+            {
+                snackbar.Add("Could not retrieve lines", Severity.Info);
+            }
+        }
+        catch(Exception ex)
+        {
+            logger.LogError($"There was an error retrieving the lines. Order Number: {Data.CoNum}. " + ex.ToString());
+        }
+    }
+    private async Task GetReleases()
+    {
+        try
+        {
+            coReleases = await expediteRequestRepository.GetOrderReleases(Data.CoNum, Data.CoLine);
+            if(coReleases.Count() == 1 && coReleases[0] == 0)
+            {
+                await GetSytelineData();
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.LogError($"There was an error retrieving releases: Order Number: {Data.CoNum}, Line: {Data.CoLine} " + ex.ToString());
+        }
+    }
+
+    private async Task GetSytelineData()
+    {
+        try
+        {
+            var sytelineData = await expediteRequestRepository.GetSytelineDocumentDataAsync(Data.CoNum, Data.CoLine, Data.CoRelease);
+            Data = new Document(Data, sytelineData);
+        }
+        catch(Exception ex)
+        {
+            logger.LogError("There was an error retrieving syteline data: " + ex.ToString());
+        }
+    }
+
+    private void NavigateToHome() => navigationManager.NavigateTo("/");
+}

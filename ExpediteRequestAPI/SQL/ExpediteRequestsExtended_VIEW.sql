@@ -1,0 +1,46 @@
+CREATE OR ALTER VIEW [dbo].[ExpediteRequestsExtended]
+AS
+SELECT  
+    d.Id,
+    d.Gkey,
+    d.DocumentNo,
+    d.CoNum,
+    d.CoLine,
+    d.CoRelease,
+    d.ShelfLifeRequirementFlag,
+    d.ShelfLifeRequirement,
+    d.PonderosaPack,
+    d.CurrentDueDate,
+    d.PartialQuantityAccepted,
+    d.PartialQuantity,
+    d.ShipDate,
+    d.Fee,
+    d.Reason,
+    d.Status,
+    d.NewShipDate,
+    d.NewShipType,
+    d.Comments,
+    d.CreatedBy,
+    d.Created,
+    d.ModifiedBy,
+    d.Modified,
+    d.ShipSite,
+    d.Job,
+    d.Ipn,
+    d.IpnDescription,
+    d.OrderDate,
+    d.CustomerName,
+    d.QtyOrdered,
+    d.Um,
+    d.DueDate,
+    d.Dpas,
+    d.Snowshoe,
+    d.InProgress,
+    d.PlanCode,
+    a.[Signature]       AS Approver,
+    a.[ApprovalStatus]  AS ApprovalStatus,
+    a.[Remarks]         AS ApprovalRemarks
+
+FROM [ExpediteRequest].[dbo].[Document] AS d
+LEFT JOIN dbo.Approval AS a
+    ON a.DocumentID = d.Id;
