@@ -3,10 +3,10 @@
     public class ApprovalService : IApprovalService
     {
 
-        private readonly ApprovalRepository _approvalRepository;
+        private readonly IApprovalRepository _approvalRepository;
         private readonly IDbContextFactory<ExpediteRequestContext> _contextFactory;
 
-        public ApprovalService(IDbContextFactory<ExpediteRequestContext> contextFactory, ApprovalRepository approvalRepository)
+        public ApprovalService(IDbContextFactory<ExpediteRequestContext> contextFactory, IApprovalRepository approvalRepository)
         {
             _contextFactory = contextFactory;
             _approvalRepository = approvalRepository;

@@ -9,7 +9,7 @@ namespace ExpediteRequestBlazor.Modules.Services.Implementations
     {
 
             private readonly IDbContextFactory<IND_APPContext> _contextSLFactory;
-            private readonly ExpediteRequestRepository _expediteRequestRepository;
+            private readonly IExpediteRequestRepository _expediteRequestRepository;
             public readonly ILogger<ExpediteRequestService> _logger;
 
             private const string CoitemMstTable = "coitem_mst";
@@ -21,7 +21,7 @@ namespace ExpediteRequestBlazor.Modules.Services.Implementations
             private const string ItemAllTable = "item_all";
             private const string TransferMstTable = "transfer_mst";
 
-            public ExpediteRequestService(IDbContextFactory<IND_APPContext> contextSLFactory, ILogger<ExpediteRequestService> logger, ExpediteRequestRepository expediteRequestRepository)
+            public ExpediteRequestService(IDbContextFactory<IND_APPContext> contextSLFactory, ILogger<ExpediteRequestService> logger, IExpediteRequestRepository expediteRequestRepository)
             {
                 _contextSLFactory = contextSLFactory;
                 _logger = logger;

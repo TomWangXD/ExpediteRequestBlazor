@@ -6,13 +6,10 @@ namespace ExpediteRequestBlazor.Modules.Repositories.Implementations
 {
     public class DocumentRepository : IDocumentRepository
     {
-        private readonly IDbContextFactory<ExpediteRequestContext> _contextFactory;
-        public readonly ILogger<DocumentRepository> _logger;
 
-        public DocumentRepository(IDbContextFactory<ExpediteRequestContext> contextFactory, ILogger<DocumentRepository> logger)
+        public DocumentRepository()
         {
-            _contextFactory = contextFactory;
-            _logger = logger;
+
         }
 
         public async Task Create(ExpediteRequestContext context, Document document)
@@ -34,20 +31,12 @@ namespace ExpediteRequestBlazor.Modules.Repositories.Implementations
 
         public async Task<Document> Get(ExpediteRequestContext context, Guid Gkey)
         {
-            try
-            {
-                IQueryable<Document> documentQuery = context.Documents.AsQueryable();
-                IQueryable<Approval> ApproverQuery = context.Approvals.AsQueryable();
-                Document document = await documentQuery.Where(doc => doc.Gkey == Gkey).FirstOrDefaultAsync();
-                document.Approvals = ApproverQuery.Where(b => b.DocumentId == document.Id).ToList();
+            IQueryable<Document> documentQuery = context.Documents.AsQueryable();
+            IQueryable<Approval> ApproverQuery = context.Approvals.AsQueryable();
+            Document document = await documentQuery.Where(doc => doc.Gkey == Gkey).FirstOrDefaultAsync();
+            document.Approvals = ApproverQuery.Where(b => b.DocumentId == document.Id).ToList();
 
-                return document;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.StackTrace);
-                return null;
-            }
+            return document;
         }
 
 

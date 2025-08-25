@@ -6,14 +6,14 @@ namespace ExpediteRequestBlazor.Modules.Services.Implementations
 {
     public class DocumentService : IDocumentService
     {
-        private readonly DocumentRepository _documentRepository;
-        private readonly ApprovalRepository _approvalRepository;
+        private readonly IDocumentRepository _documentRepository;
+        private readonly IApprovalRepository _approvalRepository;
         private readonly IDbContextFactory<ExpediteRequestContext> _contextFactory;
         public readonly ILogger<DocumentRepository> _logger;
         private readonly IConfiguration _config;
         private readonly User _user;
 
-        public DocumentService(IDbContextFactory<ExpediteRequestContext> contextFactory, ILogger<DocumentRepository> logger, IConfiguration config, User user, DocumentRepository documentRepository, ApprovalRepository approvalRepository)
+        public DocumentService(IDbContextFactory<ExpediteRequestContext> contextFactory, ILogger<DocumentRepository> logger, IConfiguration config, User user, IDocumentRepository documentRepository, IApprovalRepository approvalRepository)
         {
             _contextFactory = contextFactory;
             _logger = logger;
