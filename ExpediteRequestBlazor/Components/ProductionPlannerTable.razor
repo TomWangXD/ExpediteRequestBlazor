@@ -78,7 +78,7 @@
             _instantFeedbackSource = new(options =>
             {
                 options.KeyExpression = nameof(ExpediteRequestsExtended.Id);
-                options.QueryableSource = documentRepository.GetDocuments();
+                options.QueryableSource = documentRepository.GetProductionPlannerDocuments();
             });
         }
         catch (Exception ex)

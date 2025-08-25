@@ -18,5 +18,7 @@ namespace ExpediteRequestBlazor.Repositories
         Task UpdateObjectStatus(Document document, ElsaDocument elsaDocument);
         Task<Document> RetrieveObject(Guid Gkey);
         IQueryable<ExpediteRequestsExtended> GetDocuments();
+        IQueryable<ExpediteRequestsExtended> GetProductionPlannerDocuments();
+
     }
 }

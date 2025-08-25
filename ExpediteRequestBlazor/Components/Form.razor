@@ -135,7 +135,8 @@
                 <DxFormLayoutItem Caption="Request Ship Date" ColSpanSm="6" ColSpanMd="6" ColSpanLg="4" ColSpanXl="4" ColSpanXxl="4">
                     <DxDateEdit @bind-Date="Data.ShipDate"
                     SizeMode="SizeMode.Large"
-                    ReadOnly=false />
+                    ReadOnly=false
+                    />
                 </DxFormLayoutItem>
 
                 <DxFormLayoutItem Caption="Reasons" ColSpanSm="6" ColSpanMd="6" ColSpanLg="4" ColSpanXl="4" ColSpanXxl="4">
@@ -169,7 +170,7 @@
                     <DxFormLayoutItem Caption="Approver" ColSpanSm="6" ColSpanMd="6" ColSpanLg="6" ColSpanXl="6" ColSpanXxl="6">
                         <DxTextBox @bind-Text="@Approver"
                         SizeMode="SizeMode.Large"
-                        ReadOnly=false />
+                        ReadOnly=true />
                     </DxFormLayoutItem>
                     <DxFormLayoutItem Caption="Approval Status" ColSpanSm="6" ColSpanMd="6" ColSpanLg="6" ColSpanXl="6" ColSpanXxl="6">
                         <DxComboBox @bind-Value="@ApprovalStatus"
@@ -238,10 +239,7 @@
             }
             return string.Empty;
         }
-        set
-        {
-
-        }
+        set { }
     }
     private string _approver;
 
@@ -299,8 +297,12 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        if(Data is null) Data = new();
-        
+        if(Data is null)
+        {
+            Data = new();
+            Data.ShipDate = DateTime.UtcNow;
+        }
+
         else if (Data.Approvals is null)
         {
             Data.Approvals = new List<Approval>() { new Approval() };

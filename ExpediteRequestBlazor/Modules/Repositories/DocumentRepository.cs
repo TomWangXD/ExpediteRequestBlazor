@@ -207,5 +207,16 @@ namespace ExpediteRequestBlazor.Repositories
 
             return result.AsQueryable();
         }
+
+        public IQueryable<ExpediteRequestsExtended> GetProductionPlannerDocuments()
+        {
+            ExpediteRequestContext context = _contextFactory.CreateDbContext();
+            var result = context.ExpediteRequestsExtended
+                .AsNoTracking()
+                .Where(d => d.Status == Status.AWAITING_PRODUCTION)
+                .AsQueryable();
+
+            return result.AsQueryable();
+        }
     }
 }
