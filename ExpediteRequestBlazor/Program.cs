@@ -15,6 +15,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Hosting;
 using ExpediteRequestBlazor.Modules.Repositories.Interfaces;
 using ExpediteRequestBlazor.Modules.Repositories.Implementations;
+using ExpediteRequestBlazor.Modules.Services.Interfaces;
+using ExpediteRequestBlazor.Modules.Services.Implementations;
 
 var builder = WebApplication.CreateBuilder(args);
 
