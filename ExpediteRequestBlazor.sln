@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32319.34
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExpediteRequestBlazor", "ExpediteRequestBlazor\ExpediteRequestBlazor.csproj", "{30C47524-73E5-4CA1-B032-3002F227334A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExpediteRequestBlazorTest", "ExpediteRequestBlazorTest\ExpediteRequestBlazorTest.csproj", "{AABA9528-18F9-4963-AD18-BB5F46F88491}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{30C47524-73E5-4CA1-B032-3002F227334A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{30C47524-73E5-4CA1-B032-3002F227334A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{30C47524-73E5-4CA1-B032-3002F227334A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{30C47524-73E5-4CA1-B032-3002F227334A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AABA9528-18F9-4963-AD18-BB5F46F88491}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AABA9528-18F9-4963-AD18-BB5F46F88491}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AABA9528-18F9-4963-AD18-BB5F46F88491}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AABA9528-18F9-4963-AD18-BB5F46F88491}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C816F56D-8743-4458-9911-256EE80E2005}
+	EndGlobalSection
+EndGlobal
