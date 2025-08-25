@@ -1,4 +1,6 @@
 using ExpediteRequestBlazor.EFModels;
+using ExpediteRequestBlazor.Modules.Repositories.Implementations;
+using ExpediteRequestBlazor.Modules.Repositories.Interfaces;
 using Indium.Common.Modules;
 using Indium.Infor.EFContexts;
 using Microsoft.AspNetCore.Builder;

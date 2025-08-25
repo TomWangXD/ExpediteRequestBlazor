@@ -21,8 +21,14 @@ global using Microsoft.EntityFrameworkCore;
 global using ExpediteRequestBlazor.Models;
 global using ExpediteRequestBlazor.EFModels;
 global using ExpediteRequestBlazor.EFModels.ViewModels;
+global using ExpediteRequestBlazor.Modules.Services.Interfaces;
+global using ExpediteRequestBlazor.Modules.Services.Implementations;
+global using ExpediteRequestBlazor.Modules.Services;
+global using ExpediteRequestBlazor.Modules.Repositories;
+global using ExpediteRequestBlazor.Modules.Repositories.Interfaces;
+global using ExpediteRequestBlazor.Modules.Repositories.Implementations;
+
 global using ExpediteRequestBlazor.Components;
-global using ExpediteRequestBlazor.Repositories;
 global using ExpediteRequestBlazor;
 
 global using DevExpress.Blazor;
