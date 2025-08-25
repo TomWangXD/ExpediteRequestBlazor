@@ -18,8 +18,8 @@ variables:
   solution: '**/*.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
-  projectName: 'ExpediteRequestAPI'
-
+  projectName: 'ExpediteRequestBlazor'
+  contextName: 'ExpediteRequestContext'
 
 steps:
 - checkout: self
@@ -34,6 +34,7 @@ steps:
 - task: gitversion/execute@0
   displayName: Determine Version
 
+
 - task: NuGetToolInstaller@1
 
 - task: NuGetAuthenticate@1
@@ -45,13 +46,13 @@ steps:
     command: 'restore'
     restoreSolution: '$(Solution)'
     feedsToUse: 'config'
-    nugetConfigPath: '$(Build.SourcesDirectory)/nuget.config'   
+    nugetConfigPath: '$(Build.SourcesDirectory)/nuget.config' 
 
 - task: DotNetCoreCLI@2
   displayName: 'dotnet build $(BuildConfiguration)'
   inputs:
     command: 'build'
-    arguments: '--configuration $(BuildConfiguration) '
+    arguments: '--configuration $(BuildConfiguration)'
 
 - task: DotNetCoreCLI@2
   displayName: 'dotnet test $(BuildConfiguration)'
@@ -63,12 +64,21 @@ steps:
   displayName: 'dotnet publish $(BuildConfiguration)'
   inputs:
     command: 'publish'
-    arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)/$(projectName)-$(Build.BuildId) --no-self-contained'
-    zipAfterPublish: true
-    
+    arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)/out --no-self-contained'
+  
+
+- task: ArchiveFiles@2
+  displayName: 'Archive files'
+  inputs:
+    rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/out'
+    includeRootFolder: false
+    archiveType: zip
+    archiveFile: $(Build.ArtifactStagingDirectory)/$(projectName)-$(Build.BuildId).zip
+    replaceExistingArchive: true
 
 - task: PublishBuildArtifacts@1
   displayName: 'publish artifacts'
   inputs:
     targetPath: $(Build.ArtifactStagingDirectory)/$(projectName)-$(Build.BuildId).zip
     ArtifactName: $(projectName)
+
