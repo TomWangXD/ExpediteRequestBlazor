@@ -33,15 +33,17 @@ builder.Services.AddScoped<Indium.Common.Models.User>();
 builder.Services.AddScoped<ExpediteRequestBlazor.Shared.User>();
 builder.Services.AddScoped<TimeZoneService>();
 
+builder.Services.AddScoped<IApprovalRepository, ApprovalRepository>();
+builder.Services.AddScoped<IDocumentRepository, DocumentRepository>();
+builder.Services.AddScoped<IDropdownRepository, DropdownRepository>();
+builder.Services.AddScoped<IExpediteRequestRepository, ExpediteRequestRepository>();
+
 builder.Services.AddScoped<IDocumentService, DocumentService>();
 builder.Services.AddScoped<IDropdownService, DropdownService>();
 builder.Services.AddScoped<IExpediteRequestService, ExpediteRequestService>();
 builder.Services.AddScoped<IApprovalService, ApprovalService>();
 
-builder.Services.AddScoped<IApprovalRepository, ApprovalRepository>();
-builder.Services.AddScoped<IDocumentRepository, DocumentRepository>();
-builder.Services.AddScoped<IDropdownRepository, DropdownRepository>();
-builder.Services.AddScoped<IExpediteRequestRepository, ExpediteRequestRepository>();
+
 
 
 // Apply Authorization Policies

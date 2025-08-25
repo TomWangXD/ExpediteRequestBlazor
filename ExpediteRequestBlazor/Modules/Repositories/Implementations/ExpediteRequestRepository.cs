@@ -1,21 +1,9 @@
 using Dapper;
 using ExpediteRequestBlazor.DataTransferObjects;
-using ExpediteRequestBlazor.EFModels;
-using Indium.Common.Models;
 using Indium.Infor.EFContexts;
-using Indium.Infor.EFModels;
-using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using Microsoft.Data.SqlClient;
-using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
-using ExpediteRequestBlazor.Modules.Repositories.Interfaces;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
+
 
 namespace ExpediteRequestBlazor.Modules.Repositories.Implementations
 {
