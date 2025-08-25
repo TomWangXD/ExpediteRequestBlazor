@@ -1,14 +1,13 @@
 ﻿@using DevExpress.Blazor;
-@using ExpediteRequestBlazor.DataTransferObjects;
-@using DevExpress.Data.Linq;
 @using DevExpress.Data.Async.Helpers;
+@using DevExpress.Data.Linq;
+@using ExpediteRequestBlazor.DataTransferObjects;
 @using ExpediteRequestBlazor.EFModels.ViewModels
 @using Microsoft.EntityFrameworkCore
-@using DevExpress.Data.Linq
 
-@inject IDocumentRepository documentRepository
 @inject ILogger<ExpediteRequestsTable> logger
 @inject NavigationManager navigationManager
+@inject IDocumentService documentService
 
 @implements IDisposable
 
@@ -78,7 +77,7 @@
             _instantFeedbackSource = new(options =>
             {
                 options.KeyExpression = nameof(ExpediteRequestsExtended.Id);
-                options.QueryableSource = documentRepository.GetProductionPlannerDocuments();
+                options.QueryableSource = documentService.GetAll_ProductionPlanner();
             });
         }
         catch (Exception ex)

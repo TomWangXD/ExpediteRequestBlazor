@@ -1,14 +1,14 @@
 ﻿@using DevExpress.Blazor;
-@using ExpediteRequestBlazor.DataTransferObjects;
-@using DevExpress.Data.Linq;
 @using DevExpress.Data.Async.Helpers;
+@using DevExpress.Data.Linq;
+@using ExpediteRequestBlazor.DataTransferObjects;
 @using ExpediteRequestBlazor.EFModels.ViewModels
+@using ExpediteRequestBlazor.Modules.Services.Interfaces
 @using Microsoft.EntityFrameworkCore
-@using DevExpress.Data.Linq
 
-@inject IDocumentRepository documentRepository
 @inject ILogger<ExpediteRequestsTable> logger
 @inject NavigationManager navigationManager
+@inject IDocumentService documentService
 
 @implements IDisposable
 
@@ -79,7 +79,7 @@ SelectedDataItemChanged=@((object selected) => ViewForm(selected))
             _instantFeedbackSource = new(options =>
             {
                 options.KeyExpression = nameof(ExpediteRequestsExtended.Id);
-                options.QueryableSource = documentRepository.GetDocuments();
+                options.QueryableSource = documentService.GetAll();
             });
         }
         catch(Exception ex)

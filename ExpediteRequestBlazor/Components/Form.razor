@@ -1,11 +1,10 @@
-﻿@using ExpediteRequestBlazor.Modules.Interfaces
-@using MudBlazor;
-@using DevExpress.Blazor
+﻿@using DevExpress.Blazor
 @using Microsoft.AspNetCore.Components.Forms
+@using MudBlazor;
 
-@inject IDocumentRepository documentRepository
-@inject IDropdownRepository dropdownRepository
-@inject IExpediteRequestRepository expediteRequestRepository
+@inject IDocumentService documentService
+@inject IDropdownService dropdownService
+@inject IExpediteRequestService expediteRequestService
 @inject ILogger<Form> logger
 @inject ISnackbar snackbar
 @inject NavigationManager navigationManager
@@ -308,8 +307,16 @@
             Data.Approvals = new List<Approval>() { new Approval() };
         }
 
-        reasons = await dropdownRepository.GetExpediteReasons();
-        approvalStatuses = await dropdownRepository.GetApprovalStatuses();
+        try
+        {
+            reasons = await dropdownService.GetExpediteReasons();
+            approvalStatuses = await dropdownService.GetApprovalStatuses();
+        }
+        catch(Exception ex)
+        {
+            logger.LogError($"Expedite Reasons could not be fetched: " + ex.ToString());
+            snackbar.Add("Could not retrieve expedite requests", Severity.Error);    
+        }
     }
 
     private async Task Save(string response = "")
@@ -322,7 +329,7 @@
             {
                 Data.Status = response;
             }
-            await documentRepository.HandleObject(Data);
+            await documentService.HandleObject(Data);
 
             
             snackbar.Add("Saved!", Severity.Success);
@@ -342,7 +349,7 @@
     {
         try
         {
-            coLines = await expediteRequestRepository.GetOrderLines(Data.CoNum);
+            coLines = await expediteRequestService.GetOrderLines(Data.CoNum);
             if(coLines is null || coLines.Count == 0)
             {
                 snackbar.Add("Could not retrieve lines", Severity.Info);
@@ -357,7 +364,7 @@
     {
         try
         {
-            coReleases = await expediteRequestRepository.GetOrderReleases(Data.CoNum, Data.CoLine);
+            coReleases = await expediteRequestService.GetOrderReleases(Data.CoNum, Data.CoLine);
             if(coReleases.Count() == 1 && coReleases[0] == 0)
             {
                 await GetSytelineData();
@@ -373,7 +380,7 @@
     {
         try
         {
-            var sytelineData = await expediteRequestRepository.GetSytelineDocumentDataAsync(Data.CoNum, Data.CoLine, Data.CoRelease);
+            var sytelineData = await expediteRequestService.GetSytelineDocumentDataAsync(Data.CoNum, Data.CoLine, Data.CoRelease);
             Data = new Document(Data, sytelineData);
         }
         catch(Exception ex)

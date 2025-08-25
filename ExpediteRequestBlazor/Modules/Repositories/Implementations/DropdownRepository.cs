@@ -1,7 +1,7 @@
-﻿using ExpediteRequestBlazor.Modules.Interfaces;
+﻿using ExpediteRequestBlazor.Modules.Repositories.Interfaces;
 
 
-namespace ExpediteRequestBlazor.Modules.Repositories
+namespace ExpediteRequestBlazor.Modules.Repositories.Implementations
 {
     public class DropdownRepository : IDropdownRepository
     {
@@ -19,16 +19,14 @@ namespace ExpediteRequestBlazor.Modules.Repositories
         }
 
 
-        public async Task<List<string>> GetExpediteReasons()
+        public async Task<List<string>> GetExpediteReasons(ExpediteRequestContext context)
         {
-            await using ExpediteRequestContext context = await _contextFactory.CreateDbContextAsync();
             List<string> reasons = await context.ExpediteReasons.Select(x => x.Reason).ToListAsync();
             return reasons ?? new();
         }
 
-        public async Task<List<string>> GetApprovalStatuses()
+        public async Task<List<string>> GetApprovalStatuses(ExpediteRequestContext context)
         {
-            await using ExpediteRequestContext context = await _contextFactory.CreateDbContextAsync();
             List<string> reasons = await context.ApproverStatusLookups.Select(x => x.StatusName).ToListAsync();
             return reasons ?? new();
         }

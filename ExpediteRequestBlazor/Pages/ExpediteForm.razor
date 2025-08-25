@@ -1,11 +1,12 @@
 ﻿@page "/ExpediteForm"
 @page "/ExpediteForm/{Gkey}"
 
-@using Indium.Common.Models
 @using ExpediteRequestBlazor.Components
+@using ExpediteRequestBlazor.Modules.Repositories.Interfaces
+@using Indium.Common.Models
 @using MudBlazor
 
-@inject IDocumentRepository documentRepository
+@inject IDocumentService documentService
 
 <Form Data="document"/>
 
@@ -23,6 +24,6 @@
     {
         ConvertedGkey = Guid.TryParse(Gkey, out var parsed) ? parsed : null;
 
-        document = await documentRepository.RetrieveObject(ConvertedGkey ?? Guid.NewGuid());
+        document = await documentService.Get(ConvertedGkey ?? Guid.NewGuid());
     }
 }

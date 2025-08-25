@@ -41,8 +41,4 @@
 		<None Include="wwwroot\fonts\roboto-thinitalic-webfont.woff2" />
 	</ItemGroup>
 
-	<ItemGroup>
-	  <Folder Include="Modules\NewFolder\" />
-	</ItemGroup>
-
 </Project>
