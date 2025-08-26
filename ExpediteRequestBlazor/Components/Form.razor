@@ -234,6 +234,7 @@
     private List<string> statuses = new();
     private List<string> approvalStatuses = new();
     private string CoNum = string.Empty;
+
     private string Approver =>
         Data.Approvals is { Count: > 0 } ? Data.Approvals.ToList()[0].Signature :
         (Data.Id != 0 ? user.Employee.SamaccountName : string.Empty);
