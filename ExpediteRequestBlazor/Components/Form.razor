@@ -10,7 +10,7 @@
 @inject User user
 @inject NavigationManager navigationManager
 
-<MudText Align="Align.Center" Typo="Typo.h3">Expedite Form</MudText>
+<MudText Align="Align.Center" Class="fw-bold" Typo="Typo.h2">Expedite Form</MudText>
 
 <div class="container">
     <div class="col mt-4">
@@ -171,7 +171,7 @@
                 {
                     <DxFormLayoutItem Caption="Approver" ColSpanSm="6" ColSpanMd="6" ColSpanLg="6" ColSpanXl="6" ColSpanXxl="6">
                         <DxTextBox 
-                            Text="@Approver"
+                        Text="@Approver"
                         SizeMode="SizeMode.Large"
                         ReadOnly=true/>
                     </DxFormLayoutItem>
@@ -199,21 +199,21 @@
 
                 @if(Data.Id == 0)
                 {
-                    <DxFormLayoutItem ColSpanSm="6" ColSpanMd="6" ColSpanLg="4" ColSpanXl="4" ColSpanXxl="4">
+                    <DxFormLayoutItem CssClass="mb-5" ColSpanSm="6" ColSpanMd="6" ColSpanLg="4" ColSpanXl="4" ColSpanXxl="4">
                         <DxButton Context="buttonCancel" Click="@(() => Cancel())" SizeMode="SizeMode.Large">Cancel</DxButton>
                     </DxFormLayoutItem>
 
-                    <DxFormLayoutItem ColSpanSm="6" ColSpanMd="6" ColSpanLg="4" ColSpanXl="4" ColSpanXxl="4">
+                    <DxFormLayoutItem CssClass="mb-5" ColSpanSm="6" ColSpanMd="6" ColSpanLg="4" ColSpanXl="4" ColSpanXxl="4">
                         <DxButton Context="buttonSave" Click="@(() => Save())" SizeMode="SizeMode.Large">Save</DxButton>
                     </DxFormLayoutItem>
                 }
                 else
                 {
-                    <DxFormLayoutItem ColSpanSm="6" ColSpanMd="6" ColSpanLg="4" ColSpanXl="4" ColSpanXxl="4">
+                    <DxFormLayoutItem CssClass="mb-5" ColSpanSm="6" ColSpanMd="6" ColSpanLg="4" ColSpanXl="4" ColSpanXxl="4">
                         <DxButton Context="buttonApprove" Click="@(() => Save("Approved"))" SizeMode="SizeMode.Large">Approve</DxButton>
                     </DxFormLayoutItem>
 
-                    <DxFormLayoutItem ColSpanSm="6" ColSpanMd="6" ColSpanLg="4" ColSpanXl="4" ColSpanXxl="4">
+                    <DxFormLayoutItem CssClass="mb-5" ColSpanSm="6" ColSpanMd="6" ColSpanLg="4" ColSpanXl="4" ColSpanXxl="4">
                         <DxButton Context="buttonDecline" Click="@(() => Save("Declined"))" SizeMode="SizeMode.Large">Decline</DxButton>
                     </DxFormLayoutItem>
                 }
@@ -269,10 +269,8 @@
     {
         try
         {
-            var reasonsTask = dropdownService.GetExpediteReasons();
-            var approvalsTask = dropdownService.GetApprovalStatuses();
-            reasons = await reasonsTask;
-            approvalStatuses = await approvalsTask;
+            reasons = await dropdownService.GetExpediteReasons();
+            approvalStatuses = await dropdownService.GetApprovalStatuses();
         }
         catch (Exception ex)
         {
@@ -281,7 +279,7 @@
         }
     }
 
-    protected override Task OnParametersSetAsync()
+    protected override async Task OnParametersSetAsync()
     {
         CoNum = Data.CoNum;
 
@@ -294,8 +292,6 @@
         {
             SetApprovals();
         }
-
-        return Task.CompletedTask;
     }
 
     private async Task Save(string response = "")
@@ -308,7 +304,6 @@
             {
                 Data.Status = response;
             }
-
             await documentService.HandleObject(Data);
 
             snackbar.Add("Saved!", Severity.Success);
@@ -360,10 +355,16 @@
     {
         try
         {
+            snackbar.Add("Loading lines...", Severity.Info);
             coLines = await expediteRequestService.GetOrderLines(coNum);
             if (coLines?.Count == 0)
             {
                 snackbar.Add("Could not retrieve lines", Severity.Info);
+            }
+            else
+            {
+                snackbar.Add("Lines retrieved!", Severity.Success);
+        
             }
         }
         catch (Exception ex)
