@@ -14,6 +14,8 @@
 
 <div class="container">
     <div class="col mt-4">
+        <EditForm Context="formContext" @key="Data" Model="Data">
+            <DataAnnotationsValidator/>
             <DxFormLayout  SizeMode="SizeMode.Large" CaptionPosition="CaptionPosition.Vertical">
                 <DxFormLayoutItem Caption="Order Number" ColSpanSm="6" ColSpanMd="6" ColSpanLg="4" ColSpanXl="4" ColSpanXxl="4">
                     <DxTextBox 
@@ -216,6 +218,7 @@
                     </DxFormLayoutItem>
                 }
             </DxFormLayout>
+        </EditForm>
     </div>
 </div>
 
