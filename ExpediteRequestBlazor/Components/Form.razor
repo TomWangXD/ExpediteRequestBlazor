@@ -1,6 +1,6 @@
 ﻿@using DevExpress.Blazor
 @using Microsoft.AspNetCore.Components.Forms
-@using MudBlazor;
+@using MudBlazor
 
 @inject IDocumentService documentService
 @inject IDropdownService dropdownService
@@ -233,96 +233,57 @@
     private List<string> statuses = new();
     private List<string> approvalStatuses = new();
     private string CoNum = string.Empty;
-    private string Approver
-    {
-        get
-        {
-            if (Data.Approvals is not null && Data.Id != 0)
-            {
-                if (Data.Approvals.Count > 0)
-                {
-                    if (string.IsNullOrEmpty(_approver))
-                    {
-                        return user.Employee.FullName;
-                    }
-                    return Data.Approvals.ToList()[0].Signature;
-                }
-                else
-                {
-                    return user.Employee.SamaccountName;
-                }
-            }
-            return string.Empty;
-        }
-        set
-        {
-
-        }
-    }
-    private string _approver;
+    private string Approver =>
+        Data.Approvals is { Count: > 0 } ? Data.Approvals[0].Signature :
+        Data.Id != 0 ? user.Employee.SamaccountName : string.Empty;
 
 
     private string ApprovalStatus
     {
-        get
-        {
-            if (Data.Approvals is not null && Data.Approvals.Count > 0)
-            {
-                return _approvalStatus;
-            }
-            return string.Empty;
-        }
+        get => Data.Approvals?.Count > 0 ? _approvalStatus : string.Empty;
         set
         {
-            if(value is not null)
+            if (!string.IsNullOrEmpty(value))
             {
                 _approvalStatus = value;
                 Data.Status = value;
-                if(value is not null && value.Contains("Approve"))
-                {
-                    Data.Status = value;
-                }
             }
         }
     }
-    private string _approvalStatus;
+    private string _approvalStatus = string.Empty;
 
     private string ApproverComments
     {
-        get
-        {
-            if (Data.Approvals is not null && Data.Approvals.Count > 0)
-            {
-                return _approverComments;
-            }
-            return string.Empty;
-        }
+        get => Data.Approvals?.Count > 0 ? _approverComments : string.Empty;
         set
         {
-            _approverComments = !string.IsNullOrEmpty(value) ? value : string.Empty;
+            _approverComments = value ?? string.Empty;
             Data.ApproverComments = _approverComments;
         }
     }
-    private string _approverComments;
+    private string _approverComments = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            reasons = await dropdownService.GetExpediteReasons();
-            approvalStatuses = await dropdownService.GetApprovalStatuses();
+            var reasonsTask = dropdownService.GetExpediteReasons();
+            var approvalsTask = dropdownService.GetApprovalStatuses();
+            reasons = await reasonsTask;
+            approvalStatuses = await approvalsTask;
         }
         catch (Exception ex)
         {
-            logger.LogError($"Expedite Reasons could not be fetched: " + ex.ToString());
+            logger.LogError($"Expedite Reasons could not be fetched: {ex}");
             snackbar.Add("Could not retrieve expedite requests", Severity.Error);
         }
     }
-    protected override async Task OnParametersSetAsync()
+
+    protected override Task OnParametersSetAsync()
     {
         CoNum = Data.CoNum;
 
-        if(Data.Id == 0)
+        if (Data.Id == 0)
         {
             Data.ShipDate = DateTime.UtcNow;
             isNewForm = true;
@@ -331,6 +292,8 @@
         {
             SetApprovals();
         }
+
+        return Task.CompletedTask;
     }
 
     private async Task Save(string response = "")
@@ -339,35 +302,38 @@
         {
             snackbar.Add("Saving...", Severity.Info);
 
+            if (!string.IsNullOrEmpty(response))
+            {
+                Data.Status = response;
+            }
+
             await documentService.HandleObject(Data);
 
             snackbar.Add("Saved!", Severity.Success);
             NavigateToHome();
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             snackbar.Add("There was an error saving the request", Severity.Error);
-            logger.LogError($"Error saving data.\n\nOrder Number: {Data.CoNum}\nLines: {Data.CoLine}\nReleases: {Data.CoRelease}\n" + ex.ToString());
+            logger.LogError($"Error saving data.\n\nOrder Number: {Data.CoNum}\nLines: {Data.CoLine}\nReleases: {Data.CoRelease}\n{ex}");
         }
     }
 
     private void Cancel() => NavigateToHome();
-
-
 
     private async Task GetReleases()
     {
         try
         {
             coReleases = await expediteRequestService.GetOrderReleases(Data.CoNum, Data.CoLine);
-            if(coReleases.Count() == 1 && coReleases[0] == 0)
+            if (coReleases.Count == 1 && coReleases[0] == 0)
             {
                 await GetSytelineData();
             }
         }
         catch (Exception ex)
         {
-            logger.LogError($"There was an error retrieving releases: Order Number: {Data.CoNum}, Line: {Data.CoLine} " + ex.ToString());
+            logger.LogError($"There was an error retrieving releases: Order Number: {Data.CoNum}, Line: {Data.CoLine} {ex}");
         }
     }
 
@@ -382,9 +348,9 @@
                 CoNum = Data.CoNum;
             }
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
-            logger.LogError("There was an error retrieving syteline data: " + ex.ToString());
+            logger.LogError($"There was an error retrieving syteline data: {ex}");
         }
     }
 
@@ -393,24 +359,25 @@
         try
         {
             coLines = await expediteRequestService.GetOrderLines(coNum);
-            if (coLines is null || coLines.Count == 0)
+            if (coLines?.Count == 0)
             {
                 snackbar.Add("Could not retrieve lines", Severity.Info);
             }
         }
         catch (Exception ex)
         {
-            snackbar.Add("THere was an error retrieving the lines", Severity.Error);
-            logger.LogError($"There was an error retrieving the lines. Order Number: {coNum}. " + ex.ToString());
+            snackbar.Add("There was an error retrieving the lines", Severity.Error);
+            logger.LogError($"There was an error retrieving the lines. Order Number: {coNum}. {ex}");
         }
     }
 
     private void SetApprovals()
     {
-        if(Data.Approvals is not null && Data.Approvals.Count > 0)
+        if (Data.Approvals?.Count > 0)
         {
-            ApproverComments = Data.Approvals.ToList()[0].Remarks;
-            ApprovalStatus = Data.Approvals.ToList()[0].ApprovalStatus;
+            var approval = Data.Approvals[0];
+            ApproverComments = approval.Remarks;
+            ApprovalStatus = approval.ApprovalStatus;
         }
     }
 
