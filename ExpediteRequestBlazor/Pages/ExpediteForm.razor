@@ -11,7 +11,7 @@
 @inject ISnackbar snackbar
 @inject ILogger<ExpediteForm> logger
 
-<Form Data="document"/>
+<Form Gkey="ConvertedGkey"/>
 
 @code {
 
@@ -20,14 +20,12 @@
 
     public Guid? ConvertedGkey { get; set; }
 
-    private Document document = new();
 
     protected override async Task OnParametersSetAsync()
     {
         if (Gkey is not null)
         {
             ConvertedGkey = Guid.TryParse(Gkey, out var parsed) ? parsed : null;
-            document = await documentService.Get(ConvertedGkey ?? Guid.NewGuid());
         }
     }
 }
