@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ExpediteRequestBlazor.EFModels
 {
@@ -24,6 +26,7 @@ namespace ExpediteRequestBlazor.EFModels
         public decimal PartialQuantity { get; set; }
         public DateTime ShipDate { get; set; }
         public bool Fee { get; set; }
+        [Required]
         public string Reason { get; set; }
         public string Status { get; set; }
         public DateTime? NewShipDate { get; set; }
@@ -48,5 +51,7 @@ namespace ExpediteRequestBlazor.EFModels
         public string PlanCode { get; set; }
 
         public virtual ICollection<Approval> Approvals { get; set; }
+        [NotMapped]
+        public string? ApproverComments { get; set; }
     }
 }

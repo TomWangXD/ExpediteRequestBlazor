@@ -7,6 +7,7 @@
 @inject IExpediteRequestService expediteRequestService
 @inject ILogger<Form> logger
 @inject ISnackbar snackbar
+@inject User user
 @inject NavigationManager navigationManager
 
 <MudText Align="Align.Center" Typo="Typo.h3">Expedite Form</MudText>
@@ -14,16 +15,17 @@
 <div class="container">
     <div class="col mt-4">
         <EditForm Context="formContext" Model="Data">
+            <DataAnnotationsValidator/>
             <DxFormLayout  SizeMode="SizeMode.Large" CaptionPosition="CaptionPosition.Vertical">
                 <DxFormLayoutItem Caption="Order Number" ColSpanSm="6" ColSpanMd="6" ColSpanLg="4" ColSpanXl="4" ColSpanXxl="4">
-                    <DxTextBox Text="@Data.CoNum" 
+                    <DxTextBox 
+                    Text="@CoNum" 
                     TextChanged="@(async(value) => {
-                                   Data.CoNum = value;
-                                   await GetLines();
-                                })"
+                        Data.CoNum = value;
+                        await GetLines(value);
+                    })"
                     TextExpression="@(() => Data.CoNum)"
-                    SizeMode="SizeMode.Large"
-                    ReadOnly=false/> 
+                    ReadOnly=!isNewForm/> 
 
                 </DxFormLayoutItem>
                 <DxFormLayoutItem Caption="Line" ColSpanSm="6" ColSpanMd="6" ColSpanLg="4" ColSpanXl="4" ColSpanXxl="4">
@@ -37,7 +39,7 @@
                     Data="coLines"
                     TData="short" 
                     TValue="short"
-                    ReadOnly=false
+                    ReadOnly=!isNewForm
                     SizeMode="SizeMode.Large"/>
                 </DxFormLayoutItem>
                 <DxFormLayoutItem Caption="Release" ColSpanSm="6" ColSpanMd="6" ColSpanLg="4" ColSpanXl="4" ColSpanXxl="4">
@@ -51,7 +53,7 @@
                     Data="coReleases"
                     TData="short"
                     TValue="short"
-                    ReadOnly=false
+                    ReadOnly=!isNewForm
                     SizeMode="SizeMode.Large" />
                 </DxFormLayoutItem>
                 <DxFormLayoutItem Caption="Ship Site" ColSpanSm="6" ColSpanMd="6" ColSpanLg="4" ColSpanXl="4" ColSpanXxl="4">
@@ -145,6 +147,7 @@
                     TValue="string"
                     ReadOnly=false
                     SizeMode="SizeMode.Large" />
+                    <ValidationMessage For="@(() => Data.Reason)"/>
                 </DxFormLayoutItem>
 
                 <DxFormLayoutItem Caption="Expedite Status" ColSpanSm="6" ColSpanMd="6" ColSpanLg="4" ColSpanXl="4" ColSpanXxl="4">
@@ -161,7 +164,7 @@
                     NullText=""
                     SizeMode="SizeMode.Large"
                     Rows="5"
-                    ReadOnly="false" />
+                    ReadOnly=!isNewForm />
                 </DxFormLayoutItem>
 
                 @if (Data.Id != 0)
@@ -220,25 +223,41 @@
 
 @code {
     [Parameter]
-    public Document? Data { get; set; }
+    public Document Data { get; set; } = new();
+
+    private bool isNewForm = false;
 
     private List<short> coLines = new();
     private List<short> coReleases = new();
     private List<string> reasons = new();
     private List<string> statuses = new();
     private List<string> approvalStatuses = new();
-
+    private string CoNum = string.Empty;
     private string Approver
     {
         get
         {
-            if(Data.Approvals is not null && Data.Approvals.Count > 0)
+            if (Data.Approvals is not null && Data.Id != 0)
             {
-                return Data.Approvals.ToList()[0].Signature;
+                if (Data.Approvals.Count > 0)
+                {
+                    if (string.IsNullOrEmpty(_approver))
+                    {
+                        return user.Employee.FullName;
+                    }
+                    return Data.Approvals.ToList()[0].Signature;
+                }
+                else
+                {
+                    return user.Employee.SamaccountName;
+                }
             }
             return string.Empty;
         }
-        set { }
+        set
+        {
+
+        }
     }
     private string _approver;
 
@@ -249,7 +268,7 @@
         {
             if (Data.Approvals is not null && Data.Approvals.Count > 0)
             {
-                return Data.Approvals.ToList()[0].ApprovalStatus;
+                return _approvalStatus;
             }
             return string.Empty;
         }
@@ -258,11 +277,10 @@
             if(value is not null)
             {
                 _approvalStatus = value;
-                Data.Approvals.ToList()[0].ApprovalStatus = value;
                 Data.Status = value;
                 if(value is not null && value.Contains("Approve"))
                 {
-                    Data.Status = "Approved";
+                    Data.Status = value;
                 }
             }
         }
@@ -275,47 +293,43 @@
         {
             if (Data.Approvals is not null && Data.Approvals.Count > 0)
             {
-                return Data.Approvals.ToList()[0].Remarks;
+                return _approverComments;
             }
             return string.Empty;
         }
         set
         {
-            if(!string.IsNullOrEmpty(value))
-            {
-                Data.Approvals.ToList()[0].Remarks = value;
-            }
-            else
-            {
-                Data.Approvals.ToList()[0].Remarks = string.Empty;
-            }
-
+            _approverComments = !string.IsNullOrEmpty(value) ? value : string.Empty;
+            Data.ApproverComments = _approverComments;
         }
     }
     private string _approverComments;
 
-    protected override async Task OnParametersSetAsync()
+    protected override async Task OnInitializedAsync()
     {
-        if(Data is null)
-        {
-            Data = new();
-            Data.ShipDate = DateTime.UtcNow;
-        }
-
-        else if (Data.Approvals is null)
-        {
-            Data.Approvals = new List<Approval>() { new Approval() };
-        }
-
         try
         {
             reasons = await dropdownService.GetExpediteReasons();
             approvalStatuses = await dropdownService.GetApprovalStatuses();
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             logger.LogError($"Expedite Reasons could not be fetched: " + ex.ToString());
-            snackbar.Add("Could not retrieve expedite requests", Severity.Error);    
+            snackbar.Add("Could not retrieve expedite requests", Severity.Error);
+        }
+    }
+    protected override async Task OnParametersSetAsync()
+    {
+        CoNum = Data.CoNum;
+
+        if(Data.Id == 0)
+        {
+            Data.ShipDate = DateTime.UtcNow;
+            isNewForm = true;
+        }
+        else
+        {
+            SetApprovals();
         }
     }
 
@@ -325,13 +339,8 @@
         {
             snackbar.Add("Saving...", Severity.Info);
 
-            if (Data.Id != 0)
-            {
-                Data.Status = response;
-            }
             await documentService.HandleObject(Data);
 
-            
             snackbar.Add("Saved!", Severity.Success);
             NavigateToHome();
         }
@@ -345,21 +354,7 @@
     private void Cancel() => NavigateToHome();
 
 
-    private async Task GetLines()
-    {
-        try
-        {
-            coLines = await expediteRequestService.GetOrderLines(Data.CoNum);
-            if(coLines is null || coLines.Count == 0)
-            {
-                snackbar.Add("Could not retrieve lines", Severity.Info);
-            }
-        }
-        catch(Exception ex)
-        {
-            logger.LogError($"There was an error retrieving the lines. Order Number: {Data.CoNum}. " + ex.ToString());
-        }
-    }
+
     private async Task GetReleases()
     {
         try
@@ -381,11 +376,41 @@
         try
         {
             var sytelineData = await expediteRequestService.GetSytelineDocumentDataAsync(Data.CoNum, Data.CoLine, Data.CoRelease);
-            Data = new Document(Data, sytelineData);
+            if (sytelineData is not null)
+            {
+                Data = new Document(Data, sytelineData);
+                CoNum = Data.CoNum;
+            }
         }
         catch(Exception ex)
         {
             logger.LogError("There was an error retrieving syteline data: " + ex.ToString());
+        }
+    }
+
+    private async Task GetLines(string coNum)
+    {
+        try
+        {
+            coLines = await expediteRequestService.GetOrderLines(coNum);
+            if (coLines is null || coLines.Count == 0)
+            {
+                snackbar.Add("Could not retrieve lines", Severity.Info);
+            }
+        }
+        catch (Exception ex)
+        {
+            snackbar.Add("THere was an error retrieving the lines", Severity.Error);
+            logger.LogError($"There was an error retrieving the lines. Order Number: {coNum}. " + ex.ToString());
+        }
+    }
+
+    private void SetApprovals()
+    {
+        if(Data.Approvals is not null && Data.Approvals.Count > 0)
+        {
+            ApproverComments = Data.Approvals.ToList()[0].Remarks;
+            ApprovalStatus = Data.Approvals.ToList()[0].ApprovalStatus;
         }
     }
 

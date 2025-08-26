@@ -24,6 +24,7 @@ namespace ExpediteRequestBlazor.EFModels
             Um = sytelineData.Um;
             DueDate = sytelineData.DueDate;
             PlanCode = sytelineData.PlanCode;
+            ShipDate = doc.ShipDate;
         }
 
         public Document(DocumentModel doc)
