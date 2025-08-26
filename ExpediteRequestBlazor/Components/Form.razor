@@ -378,9 +378,8 @@
     {
         if (Data.Approvals?.Count > 0)
         {
-            var approval = Data.Approvals.ToList()[0];
-            ApproverComments = approval.Remarks;
-            ApprovalStatus = approval.ApprovalStatus;
+            ApproverComments = Data.Approvals.ToList()[0].Remarks;
+            ApprovalStatus = Data.Approvals.ToList()[0].ApprovalStatus;
         }
     }
 
