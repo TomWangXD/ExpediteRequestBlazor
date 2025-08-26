@@ -23,8 +23,7 @@ PagerVisibleNumericButtonCount=10
 ColumnResizeMode=GridColumnResizeMode.ColumnsContainer
 SelectionMode=GridSelectionMode.Single
 AllowSelectRowByClick=true
-SelectedDataItemChanged=@((object selected) => ViewForm(selected))
->
+SelectedDataItemChanged=@((object selected) => ViewForm(selected))>
 
     <Columns>
         <DxGridDataColumn FieldName="@nameof(ExpediteRequestsExtended.Status)" Caption="Expedite Status" MinWidth="100" />

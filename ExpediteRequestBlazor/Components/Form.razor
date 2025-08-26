@@ -170,9 +170,10 @@
                 @if (Data.Id != 0)
                 {
                     <DxFormLayoutItem Caption="Approver" ColSpanSm="6" ColSpanMd="6" ColSpanLg="6" ColSpanXl="6" ColSpanXxl="6">
-                        <DxTextBox @bind-Text="@Approver"
+                        <DxTextBox 
+                            Text="@Approver"
                         SizeMode="SizeMode.Large"
-                        ReadOnly=true />
+                        ReadOnly=true/>
                     </DxFormLayoutItem>
                     <DxFormLayoutItem Caption="Approval Status" ColSpanSm="6" ColSpanMd="6" ColSpanLg="6" ColSpanXl="6" ColSpanXxl="6">
                         <DxComboBox @bind-Value="@ApprovalStatus"
@@ -234,8 +235,8 @@
     private List<string> approvalStatuses = new();
     private string CoNum = string.Empty;
     private string Approver =>
-        Data.Approvals is { Count: > 0 } ? Data.Approvals[0].Signature :
-        Data.Id != 0 ? user.Employee.SamaccountName : string.Empty;
+        Data.Approvals is { Count: > 0 } ? Data.Approvals.ToList()[0].Signature :
+        (Data.Id != 0 ? user.Employee.SamaccountName : string.Empty);
 
 
     private string ApprovalStatus
@@ -375,7 +376,7 @@
     {
         if (Data.Approvals?.Count > 0)
         {
-            var approval = Data.Approvals[0];
+            var approval = Data.Approvals.ToList()[0];
             ApproverComments = approval.Remarks;
             ApprovalStatus = approval.ApprovalStatus;
         }
