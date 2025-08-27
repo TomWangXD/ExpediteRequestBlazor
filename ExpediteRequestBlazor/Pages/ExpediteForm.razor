@@ -18,7 +18,7 @@
     [Parameter]
     public string? Gkey { get; set; }
 
-    private Document document { get; set; }
+    private Document document { get; set; } = new();
 
     public Guid? ConvertedGkey { get; set; }
 
@@ -29,6 +29,10 @@
         {
             ConvertedGkey = Guid.TryParse(Gkey, out var parsed) ? parsed : null;
             document = await documentService.Get(ConvertedGkey ?? Guid.NewGuid());
+        }
+        else
+        {
+            document = new();
         }
     }
 }

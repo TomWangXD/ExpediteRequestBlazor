@@ -320,7 +320,7 @@
         }
     }
 
-    protected override async Task OnParametersSetAsync()
+    protected override void OnParametersSet()
     {
         if (Request is null)
         {
@@ -333,7 +333,6 @@
             SetApprovals();
         }
         CoNum = Request.CoNum;
-        StateHasChanged();
     }
 
     private async Task Save(string response = "")
