@@ -1,8 +1,4 @@
 ﻿using ExpediteRequestBlazor.DataTransferObjects;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace ExpediteRequestBlazor.EFModels
 {
@@ -24,6 +20,7 @@ namespace ExpediteRequestBlazor.EFModels
             Um = sytelineData.Um;
             DueDate = sytelineData.DueDate;
             PlanCode = sytelineData.PlanCode;
+            ShipDate = doc.ShipDate;
         }
 
         public Document(DocumentModel doc)

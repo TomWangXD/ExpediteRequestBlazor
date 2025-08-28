@@ -39,8 +39,10 @@ namespace ExpediteRequestBlazor.Modules.Repositories.Implementations
 
         public async Task<SytelineDocumentData>GetCoItemData(IDbConnection connection, string sql, SytelineDocumentData result, string orderNumber, short orderLine, short orderRelease)
         {
-            var coItemData = await connection.QueryFirstOrDefaultAsync(sql, new { orderNumber, orderLine, orderRelease });
-            return coItemData;
+            return await connection.QueryFirstOrDefaultAsync<SytelineDocumentData>(
+                sql,
+                new { orderNumber, orderLine, orderRelease }
+            );
         }
 
         public async Task<SytelineDocumentData> GetTrnItemData(IDbConnection connection, string sql, SytelineDocumentData result, string orderNumber, short orderLine)
@@ -78,7 +80,7 @@ namespace ExpediteRequestBlazor.Modules.Repositories.Implementations
                     $"SELECT TOP 1 Type FROM {CoMstTable} WHERE co_num = @orderNumber AND site_ref = 'MASTER'",
                     new { orderNumber });
             }
-            _ = type ?? throw new ArgumentException("Order number was not found. Please check syteline", nameof(orderNumber));
+            _ = type ?? throw new ArgumentException("Order number was not found. Please check Syteline", nameof(orderNumber));
             return type;
         }
 

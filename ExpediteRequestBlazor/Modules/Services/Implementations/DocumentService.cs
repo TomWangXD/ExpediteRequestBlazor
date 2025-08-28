@@ -44,17 +44,17 @@ namespace ExpediteRequestBlazor.Modules.Services.Implementations
                 document.ModifiedBy = _user.Employee.SamaccountName;
 
                 Approval approval = new();
-                if (document.Approvals == null)
+                if (document.Approvals == null || document.Approvals.Count == 0)
                 {
                     approval = new()
                     {
                         Title = "Manager",
                         Signature = _user.Employee.FullName,
                         Date = DateTime.UtcNow,
-                        Remarks = document.Comments,
+                        Remarks = document.ApproverComments,
                         DocumentId = document.Id,
                         ApprovalType = "Approve",
-                        ApprovalStatus = "Approve Total"
+                        ApprovalStatus = document.ApprovalStatus
                     };
                     await _approvalRepository.Create(context, approval);
                 }
@@ -86,11 +86,9 @@ namespace ExpediteRequestBlazor.Modules.Services.Implementations
         {
             await SaveObject(document);
             string OriganatorEmail = "";
-            if (!string.IsNullOrWhiteSpace(document.CreatedBy) && document.CreatedBy.Contains("\\"))
+            if (!string.IsNullOrWhiteSpace(document.CreatedBy))
             {
-                string[] OriganatorEmailList = document.CreatedBy.Split("\\");
-                OriganatorEmail += OriganatorEmailList[1];
-                OriganatorEmail += "@indium.com";
+                OriganatorEmail = document.CreatedBy + "@indium.com";
             }
 
             ElsaDocument elsaDocument = new(document)

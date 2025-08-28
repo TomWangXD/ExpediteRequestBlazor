@@ -55,7 +55,7 @@ namespace ExpediteRequestBlazor.Modules.Services.Implementations
                 {
                     return new List<short>();
                 }
-                return await _expediteRequestRepository.GetOrderLines(connection, orderNumber, sql);
+                return await _expediteRequestRepository.GetOrderLines(connection, sql, orderNumber);
             }
 
             public async Task<SytelineDocumentData> GetSytelineDocumentDataAsync(string orderNumber, short orderLine, short orderRelease)
@@ -82,8 +82,8 @@ namespace ExpediteRequestBlazor.Modules.Services.Implementations
                         string ig = ItemGlblTable;
                         string ia = ItemAllTable;
 
-                        string sql = $@"SELECT ci.ship_site, ci.ref_num, ci.item, ci.qty_ordered_conv, ci.u_m, ci.due_date, co.order_date, ca.name,
-                                       ig.description AS ipn_description, ia.plan_code
+                        string sql = $@"SELECT ci.ship_site AS ShipSite, ci.ref_num AS Job, ci.item AS Ipn, ci.qty_ordered_conv AS QtyOrdered, ci.u_m AS Um,
+                                            ci.due_date AS DueDate, co.order_date AS OrderDate, ca.name AS CustomerName, ig.description AS IpnDescription, ia.plan_code AS PlanCode
                                    FROM {ci} ci
                                    JOIN {co} co ON ci.site_ref = co.Site_ref AND ci.Co_Num = co.co_num
                                    JOIN {ca} ca ON co.site_ref = ca.site_ref AND co.cust_num = ca.cust_num AND ca.cust_seq = 0
@@ -116,8 +116,9 @@ namespace ExpediteRequestBlazor.Modules.Services.Implementations
                         ig = ItemGlblTable;
                         ia = ItemAllTable;
 
-                        string sqlTrn = $@"SELECT ti.ship_site, ti.Frm_ref_num, ti.item, ti.qty_ordered_conv, ti.u_m, ti.Sch_ship_date, toM.order_date, ti.cust_num,
-                                             ig.Description AS ipn_description, ca.name, ia.plan_code
+                        string sqlTrn = $@"SELECT ci.ship_site AS ShipSite, ci.ref_num AS Job, ci.item AS Ipn, ci.qty_ordered_conv AS QtyOrdered, ci.u_m AS Um,
+                                            ci.due_date AS DueDate, co.order_date AS OrderDate, ca.name AS CustomerName, ig.description AS IpnDescription, ia.plan_code AS PlanCode
+
                                       FROM {ti} ti
                                       JOIN {to} toM ON ti.site_ref = toM.site_ref AND ti.trn_num = toM.trn_num
                                       LEFT JOIN {ig} ig ON ig.item = ti.item
