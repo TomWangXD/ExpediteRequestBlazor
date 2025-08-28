@@ -19,7 +19,7 @@
             <DxFormLayout  SizeMode="SizeMode.Large" CaptionPosition="CaptionPosition.Vertical">
                 <DxFormLayoutItem Caption="Order Number" ColSpanSm="6" ColSpanMd="6" ColSpanLg="4" ColSpanXl="4" ColSpanXxl="4">
                     <DxTextBox 
-                    Text="@CoNum" 
+                    Text="@Request.CoNum" 
                     TextChanged="@(async(value) => {
                         Request.CoNum = value;
                         await GetLines(value);
@@ -244,7 +244,6 @@
     private List<string> reasons = new();
     private List<string> statuses = new();
     private List<string> approvalStatuses = new();
-    private string CoNum = string.Empty;
     private bool isNewForm = false;
 
     private string? Approver
@@ -320,7 +319,6 @@
         {
             SetApprovals();
         }
-        CoNum = Request.CoNum;
     }
 
     private async Task Save(string response = "")
@@ -371,7 +369,6 @@
             if (sytelineData is not null)
             {
                 Request = new Document(Request, sytelineData);
-                CoNum = Request.CoNum;
             }
         }
         catch (Exception ex)
