@@ -23,7 +23,7 @@ PagerVisibleNumericButtonCount=10
 ColumnResizeMode=GridColumnResizeMode.ColumnsContainer
 SelectionMode=GridSelectionMode.Single
 AllowSelectRowByClick=true
-SelectedDataItemChanged=@((object selected) => ViewForm(selected))>
+SelectedDataItemChanged=@(selected => ViewForm(selected))>
 
     <Columns>
         <DxGridDataColumn FieldName="@nameof(ExpediteRequestsExtended.Status)" Caption="Expedite Status" MinWidth="100" />
@@ -70,7 +70,7 @@ SelectedDataItemChanged=@((object selected) => ViewForm(selected))>
 @code {
     private EntityInstantFeedbackSource _instantFeedbackSource = null!;
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
         try
         {
@@ -94,8 +94,5 @@ SelectedDataItemChanged=@((object selected) => ViewForm(selected))>
         if (row is not null) navigationManager.NavigateTo($"ExpediteForm/{row.Gkey.ToString()}");
     }
 
-    public void Dispose()
-    {
-        _instantFeedbackSource?.Dispose();
-    }
+    public void Dispose() => _instantFeedbackSource?.Dispose();
 }

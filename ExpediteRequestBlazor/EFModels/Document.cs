@@ -51,5 +51,7 @@ namespace ExpediteRequestBlazor.EFModels
         public virtual ICollection<Approval> Approvals { get; set; }
         [NotMapped]
         public string? ApproverComments { get; set; }
+        [NotMapped]
+        public string? ApprovalStatus { get; set; }
     }
 }

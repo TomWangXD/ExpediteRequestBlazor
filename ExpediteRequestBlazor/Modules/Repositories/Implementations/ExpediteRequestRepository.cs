@@ -80,7 +80,7 @@ namespace ExpediteRequestBlazor.Modules.Repositories.Implementations
                     $"SELECT TOP 1 Type FROM {CoMstTable} WHERE co_num = @orderNumber AND site_ref = 'MASTER'",
                     new { orderNumber });
             }
-            _ = type ?? throw new ArgumentException("Order number was not found. Please check syteline", nameof(orderNumber));
+            _ = type ?? throw new ArgumentException("Order number was not found. Please check Syteline", nameof(orderNumber));
             return type;
         }
 

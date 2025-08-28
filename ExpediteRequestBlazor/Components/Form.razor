@@ -172,13 +172,14 @@
                     ReadOnly=!isNewForm />
                 </DxFormLayoutItem>
 
-                @if (Request.Id != 0)
+                @if (Request.Id != 0 && !isLoading)
                 {
                     <DxFormLayoutItem Caption="Approver" ColSpanSm="6" ColSpanMd="6" ColSpanLg="6" ColSpanXl="6" ColSpanXxl="6">
                         <DxTextBox 
                         @bind-Text="@Approver"
                         SizeMode="SizeMode.Large"
-                        ReadOnly=true/>
+                        ReadOnly=true
+                        />
                     </DxFormLayoutItem> 
 
                     <DxFormLayoutItem Caption="Approval Status" ColSpanSm="6" ColSpanMd="6" ColSpanLg="6" ColSpanXl="6" ColSpanXxl="6">
@@ -209,21 +210,21 @@
                 @if(Request.Id == 0)
                 {
                     <DxFormLayoutItem CssClass="mb-5" ColSpanSm="6" ColSpanMd="6" ColSpanLg="4" ColSpanXl="4" ColSpanXxl="4">
-                        <DxButton Context="buttonCancel" Click="@(() => Cancel())" SizeMode="SizeMode.Large">Cancel</DxButton>
+                        <DxButton Context="buttonCancel" Enabled="!isLoading" Click="@(() => Cancel())" SizeMode="SizeMode.Large">Cancel</DxButton>
                     </DxFormLayoutItem>
 
                     <DxFormLayoutItem CssClass="mb-5" ColSpanSm="6" ColSpanMd="6" ColSpanLg="4" ColSpanXl="4" ColSpanXxl="4">
-                        <DxButton Context="buttonSave" Click="@(() => Save())" SizeMode="SizeMode.Large">Save</DxButton>
+                        <DxButton Context="buttonSave" Enabled="!isLoading" Click="@(() => Save())" SizeMode="SizeMode.Large">Save</DxButton>
                     </DxFormLayoutItem>
                 }
                 else
                 {
                     <DxFormLayoutItem CssClass="mb-5" ColSpanSm="6" ColSpanMd="6" ColSpanLg="4" ColSpanXl="4" ColSpanXxl="4">
-                        <DxButton Context="buttonApprove" Click="@(() => Save(ApprovalStatus))" SizeMode="SizeMode.Large">Approve</DxButton>
+                        <DxButton Context="buttonApprove" Enabled="!isLoading" Click="@(() => Save(ApprovalStatus))" SizeMode="SizeMode.Large">Approve</DxButton>
                     </DxFormLayoutItem>
 
                     <DxFormLayoutItem CssClass="mb-5" ColSpanSm="6" ColSpanMd="6" ColSpanLg="4" ColSpanXl="4" ColSpanXxl="4">
-                        <DxButton Context="buttonDecline" Click="@(() => Save("Declined"))" SizeMode="SizeMode.Large">Decline</DxButton>
+                        <DxButton Context="buttonDecline" Enabled="!isLoading"  Click="@(() => Save(Status.DECLINED))" SizeMode="SizeMode.Large">Decline</DxButton>
                     </DxFormLayoutItem>
                 } 
             </DxFormLayout>
@@ -233,7 +234,6 @@
 
 @code {
     #nullable enable
-    // public Guid? Gkey { get; set; }
     [Parameter]
     public Document? Request { get; set; } = new();
 
@@ -244,7 +244,9 @@
     private List<string> reasons = new();
     private List<string> statuses = new();
     private List<string> approvalStatuses = new();
+
     private bool isNewForm = false;
+    private bool isLoading = false;
 
     private string? Approver
     {
@@ -258,13 +260,9 @@
 
             return user?.Employee?.SamaccountName ?? string.Empty;
         }
-        set
-        {
-
-        }
+        set { }
     }
     private string _approver;
-
 
     private string? ApprovalStatus
     {
@@ -276,6 +274,7 @@
             {
                 _approvalStatus = value;
                 Request.Status = value;
+                Request.ApprovalStatus = value;
             }
         }
     }
@@ -325,6 +324,7 @@
     {
         try
         {
+            DisableButtons();
             snackbar.Add("Saving...", Severity.Info);
 
             if (!string.IsNullOrEmpty(response))
@@ -340,10 +340,9 @@
         {
             snackbar.Add("There was an error saving the request", Severity.Error);
             logger.LogError($"Error saving Request.\n\nOrder Number: {Request.CoNum}\nLines: {Request.CoLine}\nReleases: {Request.CoRelease}\n{ex}");
+            isLoading = false;
         }
     }
-
-    private void Cancel() => NavigateToHome();
 
     private async Task GetReleases()
     {
@@ -366,6 +365,7 @@
         try
         {
             var sytelineData = await expediteRequestService.GetSytelineDocumentDataAsync(Request.CoNum, Request.CoLine, Request.CoRelease);
+
             if (sytelineData is not null)
             {
                 Request = new Document(Request, sytelineData);
@@ -390,7 +390,6 @@
             else
             {
                 snackbar.Add("Lines retrieved!", Severity.Success);
-        
             }
         }
         catch (Exception ex)
@@ -404,10 +403,13 @@
     {
         if (Request.Approvals?.Count > 0)
         {
-            ApproverComments = Request.Approvals.ToList()[0].Remarks;
-            ApprovalStatus = Request.Approvals.ToList()[0].ApprovalStatus;
+            Approval approval = Request.Approvals.ToList()[0];
+            ApproverComments = approval.Remarks;
+            ApprovalStatus = approval.ApprovalStatus;
         }
     }
 
+    public void DisableButtons() => isLoading = true;
+    private void Cancel() => NavigateToHome();
     private void NavigateToHome() => navigationManager.NavigateTo("ExpediteRequests");
 }

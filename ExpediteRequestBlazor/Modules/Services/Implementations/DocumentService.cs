@@ -54,7 +54,7 @@ namespace ExpediteRequestBlazor.Modules.Services.Implementations
                         Remarks = document.ApproverComments,
                         DocumentId = document.Id,
                         ApprovalType = "Approve",
-                        ApprovalStatus = "Approve Total"
+                        ApprovalStatus = document.ApprovalStatus
                     };
                     await _approvalRepository.Create(context, approval);
                 }
