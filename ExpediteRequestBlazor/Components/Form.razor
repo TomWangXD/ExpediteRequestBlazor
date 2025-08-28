@@ -26,7 +26,7 @@
                     })"
                     TextExpression="@(() => Request.CoNum)"
                     ReadOnly=!isNewForm/> 
-
+ 
                 </DxFormLayoutItem>
                 <DxFormLayoutItem Caption="Line" ColSpanSm="6" ColSpanMd="6" ColSpanLg="4" ColSpanXl="4" ColSpanXxl="4">
                     <DxComboBox 
@@ -96,11 +96,13 @@
                     SizeMode="SizeMode.Large"
                     ReadOnly=true />
                 </DxFormLayoutItem>
+                
                 <DxFormLayoutItem Caption="Due Date"ColSpanSm="6" ColSpanMd="6" ColSpanLg="4" ColSpanXl="4" ColSpanXxl="4">
                     <DxDateEdit @bind-Date="Request.DueDate"
                     SizeMode="SizeMode.Large"
                     ReadOnly=true />
                 </DxFormLayoutItem>
+                
                 <DxFormLayoutItem Caption="Planner Code" ColSpanSm="6" ColSpanMd="6" ColSpanLg="4" ColSpanXl="4" ColSpanXxl="4">
                     <DxTextBox @bind-Text="Request.PlanCode"
                     SizeMode="SizeMode.Large"
@@ -322,7 +324,7 @@
 
     protected override void OnParametersSet()
     {
-        if (Request is null)
+        if (Request is null || Request.Id == 0)
         {
             Request = new();
             Request.ShipDate = DateTime.UtcNow;
