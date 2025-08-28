@@ -26,7 +26,7 @@
                     })"
                     TextExpression="@(() => Request.CoNum)"
                     ReadOnly=!isNewForm/> 
- 
+
                 </DxFormLayoutItem>
                 <DxFormLayoutItem Caption="Line" ColSpanSm="6" ColSpanMd="6" ColSpanLg="4" ColSpanXl="4" ColSpanXxl="4">
                     <DxComboBox 
@@ -66,6 +66,8 @@
                     SizeMode="SizeMode.Large"
                     ReadOnly=true />
                 </DxFormLayoutItem>
+
+
                 <DxFormLayoutItem Caption="Ipn" ColSpanSm="6" ColSpanMd="6" ColSpanLg="4" ColSpanXl="4" ColSpanXxl="4">
                     <DxTextBox @bind-Text="Request.Ipn"
                     SizeMode="SizeMode.Large"
@@ -96,13 +98,13 @@
                     SizeMode="SizeMode.Large"
                     ReadOnly=true />
                 </DxFormLayoutItem>
-                
+
                 <DxFormLayoutItem Caption="Due Date"ColSpanSm="6" ColSpanMd="6" ColSpanLg="4" ColSpanXl="4" ColSpanXxl="4">
                     <DxDateEdit @bind-Date="Request.DueDate"
                     SizeMode="SizeMode.Large"
                     ReadOnly=true />
                 </DxFormLayoutItem>
-                
+
                 <DxFormLayoutItem Caption="Planner Code" ColSpanSm="6" ColSpanMd="6" ColSpanLg="4" ColSpanXl="4" ColSpanXxl="4">
                     <DxTextBox @bind-Text="Request.PlanCode"
                     SizeMode="SizeMode.Large"
@@ -160,6 +162,7 @@
                     ReadOnly=true
                     SizeMode="SizeMode.Large" />
                 </DxFormLayoutItem>
+
                 <DxFormLayoutItem Caption="Comments" ColSpanSm="12" ColSpanMd="12" ColSpanLg="12" ColSpanXl="12" ColSpanXxl="12">
                     <DxMemo @bind-Text="Request.Comments"
                     ClearButtonDisplayMode="DataEditorClearButtonDisplayMode.Auto"
@@ -173,16 +176,18 @@
                 {
                     <DxFormLayoutItem Caption="Approver" ColSpanSm="6" ColSpanMd="6" ColSpanLg="6" ColSpanXl="6" ColSpanXxl="6">
                         <DxTextBox 
-                        Text="@Approver"
+                        @bind-Text="@Approver"
                         SizeMode="SizeMode.Large"
                         ReadOnly=true/>
-                    </DxFormLayoutItem>
+                    </DxFormLayoutItem> 
+
                     <DxFormLayoutItem Caption="Approval Status" ColSpanSm="6" ColSpanMd="6" ColSpanLg="6" ColSpanXl="6" ColSpanXxl="6">
                         <DxComboBox @bind-Value="@ApprovalStatus"
                         Data="approvalStatuses"
                         SizeMode="SizeMode.Large"
                         ReadOnly=false />
                     </DxFormLayoutItem>
+
                     <DxFormLayoutItem Caption="Approver Comments" ColSpanSm="12" ColSpanMd="12" ColSpanLg="12" ColSpanXl="12" ColSpanXxl="12">
                         <DxMemo @bind-Text="@ApproverComments"
                         SizeMode="SizeMode.Large"
@@ -197,7 +202,9 @@
                         SizeMode="SizeMode.Large"
                         ReadOnly=true />
                     </DxFormLayoutItem>
+
                 }
+
 
                 @if(Request.Id == 0)
                 {
@@ -212,13 +219,13 @@
                 else
                 {
                     <DxFormLayoutItem CssClass="mb-5" ColSpanSm="6" ColSpanMd="6" ColSpanLg="4" ColSpanXl="4" ColSpanXxl="4">
-                        <DxButton Context="buttonApprove" Click="@(() => Save("Approved"))" SizeMode="SizeMode.Large">Approve</DxButton>
+                        <DxButton Context="buttonApprove" Click="@(() => Save(ApprovalStatus))" SizeMode="SizeMode.Large">Approve</DxButton>
                     </DxFormLayoutItem>
 
                     <DxFormLayoutItem CssClass="mb-5" ColSpanSm="6" ColSpanMd="6" ColSpanLg="4" ColSpanXl="4" ColSpanXxl="4">
                         <DxButton Context="buttonDecline" Click="@(() => Save("Declined"))" SizeMode="SizeMode.Large">Decline</DxButton>
                     </DxFormLayoutItem>
-                }
+                } 
             </DxFormLayout>
         </EditForm>
     </div>
@@ -240,26 +247,17 @@
     private string CoNum = string.Empty;
     private bool isNewForm = false;
 
-    private string Approver
+    private string? Approver
     {
         get
         {
-            if (Request.Approvals is not null && Request.Id != 0)
-            {
-                if (Request.Approvals.Count > 0)
-                {
-                    if (string.IsNullOrEmpty(_approver))
-                    {
-                        return user.Employee.FullName;
-                    }
-                    return Request.Approvals.ToList()[0].Signature;
-                }
-                else
-                {
-                    return user.Employee.SamaccountName;
-                }
-            }
-            return string.Empty;
+            if (Request?.Id == 0)
+                return string.Empty;
+
+            if (Request?.Approvals?.Any() == true)
+                return Request.Approvals.First().Signature ?? string.Empty;
+
+            return user?.Employee?.SamaccountName ?? string.Empty;
         }
         set
         {
@@ -269,16 +267,10 @@
     private string _approver;
 
 
-    private string ApprovalStatus
+    private string? ApprovalStatus
     {
-        get
-        {
-            if (Request.Approvals is not null && Request.Approvals.Count > 0)
-            {
-                return _approvalStatus;
-            }
-            return string.Empty;
-        }
+        get => Request?.Approvals?.Any() ?? false ? _approvalStatus : string.Empty;
+
         set
         {
             if (!string.IsNullOrEmpty(value))
@@ -290,23 +282,17 @@
     }
     private string _approvalStatus;
 
-    private string ApproverComments
+    private string? ApproverComments
     {
-        get
-        {
-            if (Request.Approvals is not null && Request.Approvals.Count > 0)
-            {
-                return _approverComments;
-            }
-            return string.Empty;
-        }
+        get => _approverComments ?? string.Empty;
+
         set
         {
             _approverComments = value ?? string.Empty;
             Request.ApproverComments = _approverComments;
         }
     }
-    private string _approverComments;
+    private string? _approverComments;
 
     protected override async Task OnInitializedAsync()
     {
