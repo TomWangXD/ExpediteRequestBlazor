@@ -59,5 +59,15 @@ namespace ExpediteRequestBlazor.Modules.Repositories.Implementations
 
             return result.AsQueryable();
         }
+
+        public async Task<List<string>> GetAll_SitesFromRequests(ExpediteRequestContext context)
+        {
+            return await context.Documents
+                .Where(x => !string.IsNullOrEmpty(x.ShipSite))
+                .Select(x => x.ShipSite.Trim().ToUpper())
+                .Distinct()
+                .OrderBy(x => x)
+                .ToListAsync();
+        }
     }
 }
