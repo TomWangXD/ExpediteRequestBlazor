@@ -71,10 +71,10 @@ SelectedDataItemChanged=@(selected => ViewForm(selected))>
 
 </DxGrid>
 
- <DxPopup Visible="@displayExportPopup"
+<DxPopup Visible="@displayExportPopup"
 
-    HeaderText="Please select a date range"
-    CloseOnOutsideClick="false">
+HeaderText="Please select a date range"
+CloseOnOutsideClick="false">
     <BodyContentTemplate Context="popupCtx">
         <div class="mb-5 mt-5">
             <DateRangeFilterExportTemplate @bind-DateRange="ExportDateRangeFilter" />
@@ -155,23 +155,29 @@ SelectedDataItemChanged=@(selected => ViewForm(selected))>
 
     public async Task ExportByDate(DateRange? dateRange)
     {
-        ToggleExportPopup();
-        snackbar.Add("Exporting...", Severity.Info);
-        List<ExpediteRequestsExtended> RowsToExport = dateRange is not null ?
-                                           await documentService.GetAll_Export(dateRange) :
-                                           await documentService.GetAll_Export();
+        try
+        {
+            ToggleExportPopup();
+            snackbar.Add("Exporting...", Severity.Info);
+            List<ExpediteRequestsExtended> RowsToExport = dateRange is not null ?
+                                               await documentService.GetAll_Export(dateRange) :
+                                               await documentService.GetAll_Export();
 
-        await documentService.DownloadExcelFile(RowsToExport, jsRuntime, logger);
+            await documentService.DownloadExcelFile(RowsToExport, jsRuntime, logger);
 
-        snackbar.Add(
-            dateRange is not null && dateRange.Start != null && dateRange.End != null
-                ? $"Data exported for {dateRange.Start:MM/dd/yyyy} - {dateRange.End:MM/dd/yyyy}"
-                : "Data exported!",
-            Severity.Success
-        );
+            snackbar.Add(
+                dateRange is not null && dateRange.Start != null && dateRange.End != null
+                    ? $"Data exported for {dateRange.Start:MM/dd/yyyy} - {dateRange.End:MM/dd/yyyy}"
+                    : "Data exported!",
+                Severity.Success
+            );
+        }
+        catch(Exception ex)
+        {
+            logger.LogError($"Error exporting all:{ex.ToString()}");
+            snackbar.Add("There was an error exporting all", Severity.Error);
+        }
     }
-
-
 
     public void Dispose() => _instantFeedbackSource?.Dispose();
 }
