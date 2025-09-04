@@ -5,14 +5,20 @@
 @using ExpediteRequestBlazor.EFModels.ViewModels
 @using ExpediteRequestBlazor.Modules.Services.Interfaces
 @using Microsoft.EntityFrameworkCore
+@using MudBlazor
 
 @inject ILogger<ExpediteRequestsTable> logger
 @inject NavigationManager navigationManager
 @inject IDocumentService documentService
+@inject IJSRuntime jsRuntime
+@inject ISnackbar snackbar
 
 @implements IDisposable
 
+<MudButton Color="Color.Primary" Variant="Variant.Filled" Class="mb-2" OnClick="ToggleExportPopup">Export</MudButton>
+
 <DxGrid Data="_instantFeedbackSource"
+@ref=@Grid
 ShowFilterRow=true
 PagerNavigationMode="PagerNavigationMode.Auto"
 SizeMode="SizeMode.Medium"
@@ -65,20 +71,46 @@ SelectedDataItemChanged=@(selected => ViewForm(selected))>
 
 </DxGrid>
 
+ <DxPopup Visible="@displayExportPopup"
+
+    HeaderText="Please select a date range"
+    CloseOnOutsideClick="false">
+    <BodyContentTemplate Context="popupCtx">
+        <div class="mb-5 mt-5">
+            <DateRangeFilterExportTemplate @bind-DateRange="ExportDateRangeFilter" />
+        </div>
+        <div class="modal-button">
+            <DxButton SizeMode="SizeMode.Medium" Visible="!isExporting" Click="@(async() => await ExportByDate(ExportDateRangeFilter))">Export by Date</DxButton>
+            <DxButton SizeMode="SizeMode.Medium" Visible="!isExporting" Click="@(async() => await ExportAll())">Export all</DxButton>
+            <DxButton SizeMode="SizeMode.Medium" Visible="!isExporting" Click="ToggleExportPopup">Cancel</DxButton>
+        </div>
+    </BodyContentTemplate>
+</DxPopup> 
 
 
 @code {
     private EntityInstantFeedbackSource _instantFeedbackSource = null!;
+    private IGrid Grid { get; set; }
 
-    protected override void OnInitialized()
+    private DateRange ExportDateRangeFilter { get; set; } = GetDefaultDateRange();
+
+    private bool displayExportPopup = false;
+    private bool isLoaded = false;
+    private bool isExporting = false;
+
+    protected override async Task OnInitializedAsync()
     {
         try
         {
-            _instantFeedbackSource = new(options =>
+            if (!isLoaded)
             {
-                options.KeyExpression = nameof(ExpediteRequestsExtended.Id);
-                options.QueryableSource = documentService.GetAll();
-            });
+                _instantFeedbackSource = new(options =>
+                {
+                    options.KeyExpression = nameof(ExpediteRequestsExtended.Id);
+                    options.QueryableSource = documentService.GetAll();
+                });
+                isLoaded = true;
+            }
         }
         catch(Exception ex)
         {
@@ -93,6 +125,53 @@ SelectedDataItemChanged=@(selected => ViewForm(selected))>
 
         if (row is not null) navigationManager.NavigateTo($"ExpediteForm/{row.Gkey.ToString()}");
     }
+
+    private void ToggleExportPopup()
+    {
+        displayExportPopup = !displayExportPopup;
+        ExportDateRangeFilter = GetDefaultDateRange();
+    }
+
+    private static DateRange GetDefaultDateRange() => new DateRange() { Start = DateTime.UtcNow.AddDays(-14), End = DateTime.UtcNow };
+
+    private async Task ExportAll()
+    {
+        try
+        {
+            ToggleExportPopup();
+            isExporting = true;
+            snackbar.Add("Exporting all...", Severity.Info);
+            List<ExpediteRequestsExtended> RowsToExport = new();
+            RowsToExport = await documentService.GetAll_Export();
+            await documentService.DownloadExcelFile(RowsToExport, jsRuntime, logger);
+            snackbar.Add("All data exported!", Severity.Success);
+        }
+        catch(Exception ex)
+        {
+            logger.LogError($"Error exporting all:{ex.ToString()}");
+            snackbar.Add("There was an error exporting all", Severity.Error);
+        }
+    }
+
+    public async Task ExportByDate(DateRange? dateRange)
+    {
+        ToggleExportPopup();
+        snackbar.Add("Exporting...", Severity.Info);
+        List<ExpediteRequestsExtended> RowsToExport = dateRange is not null ?
+                                           await documentService.GetAll_Export(dateRange) :
+                                           await documentService.GetAll_Export();
+
+        await documentService.DownloadExcelFile(RowsToExport, jsRuntime, logger);
+
+        snackbar.Add(
+            dateRange is not null && dateRange.Start != null && dateRange.End != null
+                ? $"Data exported for {dateRange.Start:MM/dd/yyyy} - {dateRange.End:MM/dd/yyyy}"
+                : "Data exported!",
+            Severity.Success
+        );
+    }
+
+
 
     public void Dispose() => _instantFeedbackSource?.Dispose();
 }

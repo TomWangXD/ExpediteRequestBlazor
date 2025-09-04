@@ -1,4 +1,7 @@
-﻿using System.Data;
+﻿using ExpediteRequestBlazor.EFModels;
+using ExpediteRequestBlazor.EFModels.ViewModels;
+using System.Data;
+using System.Linq.Expressions;
 
 
 
@@ -35,8 +38,12 @@ namespace ExpediteRequestBlazor.Modules.Repositories.Implementations
             IQueryable<Approval> ApproverQuery = context.Approvals.AsQueryable();
             Document document = await documentQuery.Where(doc => doc.Gkey == Gkey).FirstOrDefaultAsync();
             document.Approvals = ApproverQuery.Where(b => b.DocumentId == document.Id).ToList();
-
             return document;
+        }
+
+        public async Task<List<ExpediteRequestsExtended>> GetBy_RequestExtended(ExpediteRequestContext context, Expression<Func<ExpediteRequestsExtended, bool>> selector)
+        {
+            return await context.ExpediteRequestsExtended.Where(selector).ToListAsync();
         }
 
 
