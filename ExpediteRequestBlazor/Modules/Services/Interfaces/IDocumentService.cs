@@ -8,7 +8,8 @@ namespace ExpediteRequestBlazor.Modules.Services.Interfaces
         IQueryable<ExpediteRequestsExtended> GetAll();
 
         Task HandleObject(Document document);
-        void ValidateDocumentExists(Document item);
+        Task ValidateDocumentExists(Document item);
+        Task<List<string>> GetAll_SitesFromRequests();
         Task UpdateObjectStatus(Document document, ElsaDocument elsaDocument);
         Task<T> ParseWorkflowEngineResponseAsync<T>(HttpContent content);
         Task<HttpContent> GetWorkflowEngineResponseAsync<T>(T item);

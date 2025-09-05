@@ -34,7 +34,16 @@ SelectedDataItemChanged=@(selected => ViewForm(selected))>
         <DxGridDataColumn FieldName="@nameof(ExpediteRequestsExtended.CoLine)" Caption="Line" MinWidth="70" />
         <DxGridDataColumn FieldName="@nameof(ExpediteRequestsExtended.CoRelease)" Caption="Release" MinWidth="70" />
         <DxGridDataColumn FieldName="@nameof(ExpediteRequestsExtended.PlanCode)" Caption="Planner Code" MinWidth="70" />
-        <DxGridDataColumn FieldName="@nameof(ExpediteRequestsExtended.ShipSite)" Caption="Ship Site" MinWidth="70" />
+        <DxGridDataColumn FieldName="@nameof(ExpediteRequestsExtended.ShipSite)" Caption="Ship Site" MinWidth="70">
+            <FilterRowCellTemplate>
+                <DxComboBox TData="string"
+                TValue="string"
+                Data=sites
+                ClearButtonDisplayMode=DataEditorClearButtonDisplayMode.Auto
+                Value="@(context.FilterRowValue?.ToString())"
+                ValueChanged="(string? obj) => context.FilterRowValue = obj" />
+            </FilterRowCellTemplate>
+        </DxGridDataColumn>
         <DxGridDataColumn FieldName="@nameof(ExpediteRequestsExtended.Job)" Caption="Job Number" MinWidth="100" />
         <DxGridDataColumn FieldName="@nameof(ExpediteRequestsExtended.Ipn)" Caption="IPN" MinWidth="200" />
         <DxGridDataColumn FieldName="@nameof(ExpediteRequestsExtended.IpnDescription)" Caption="IPN Description" MinWidth="200" />
@@ -46,7 +55,7 @@ SelectedDataItemChanged=@(selected => ViewForm(selected))>
         <DxGridDataColumn FieldName="@nameof(ExpediteRequestsExtended.DueDate)" Caption="Due Date" MinWidth="100" DisplayFormat="d" />
 
         <DxGridDataColumn FieldName="@nameof(ExpediteRequestsExtended.ShelfLifeRequirement)" Caption="Shelf Life Required" MinWidth="100" />
-        <DxGridDataColumn FieldName="@nameof(ExpediteRequestsExtended.PonderosaPack)" Caption="Ponderosa Pack" MinWidth="70" />
+        <DxGridDataColumn FieldName="@nameof(ExpediteRequestsExtended.PonderosaPack)" Caption="Ponderosa Pack" MinWidth="100" />
         <DxGridDataColumn FieldName="@nameof(ExpediteRequestsExtended.CurrentDueDate)" Caption="Current Due Date" MinWidth="100" />
         <DxGridDataColumn FieldName="@nameof(ExpediteRequestsExtended.PartialQuantityAccepted)" Caption="Partial Accepted" MinWidth="100" />
 
@@ -70,8 +79,9 @@ SelectedDataItemChanged=@(selected => ViewForm(selected))>
 
 @code {
     private EntityInstantFeedbackSource _instantFeedbackSource = null!;
+    private List<string> sites = new();
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         try
         {
@@ -80,6 +90,7 @@ SelectedDataItemChanged=@(selected => ViewForm(selected))>
                 options.KeyExpression = nameof(ExpediteRequestsExtended.Id);
                 options.QueryableSource = documentService.GetAll();
             });
+           sites = await documentService.GetAll_SitesFromRequests();
         }
         catch(Exception ex)
         {
