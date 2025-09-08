@@ -1,0 +1,48 @@
+﻿@using DevExpress.Data.Filtering
+@using MudBlazor
+
+<MudDateRangePicker @ref="_pickerRef"
+                    IconSize=Size.Small
+                    @bind-DateRange=DateRange
+                    Class="mt-0 p-0"
+                    Style="padding: 0.2rem !important"
+                    DateFormat="d MMM yyyy"
+                    TitleDateFormat="d MMM yyyy"
+                    Variant="Variant.Text"
+                    PickerVariant="PickerVariant.Dialog">
+
+    <PickerActions>
+        <MudButton Class="mr-auto align-self-start" OnClick=@(() => _pickerRef.ClearAsync())>
+            Clear Filter
+        </MudButton>
+        <MudButton OnClick="@(() => _pickerRef.CloseAsync(false))">
+            Cancel
+        </MudButton>
+        <MudButton Color="Color.Primary" OnClick="@(() => _pickerRef.CloseAsync())">
+            Ok
+        </MudButton>
+    </PickerActions>
+</MudDateRangePicker>
+
+@code {
+
+    [Parameter]
+    public DateRange? DateRange
+    {
+        get => _dateRange;
+        set
+        {
+            if (_dateRange != value)
+            {
+                _dateRange = value;
+                DateRangeChanged.InvokeAsync(_dateRange);
+            }
+        }
+    }
+
+    [Parameter]
+    public EventCallback<DateRange?> DateRangeChanged { get; set; }
+
+    private DateRange? _dateRange = new();
+    private MudDateRangePicker _pickerRef = new();
+}

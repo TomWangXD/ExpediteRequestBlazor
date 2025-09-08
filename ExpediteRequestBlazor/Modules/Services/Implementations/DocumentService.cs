@@ -1,5 +1,8 @@
 ﻿using ExpediteRequestBlazor.DataTransferObjects;
+using Indium.Common.DataTransferObjects;
+using Indium.Common.Modules;
 using Newtonsoft.Json;
+using System.Linq.Expressions;
 using System.Net.Http.Headers;
 
 namespace ExpediteRequestBlazor.Modules.Services.Implementations
@@ -145,10 +148,81 @@ namespace ExpediteRequestBlazor.Modules.Services.Implementations
             return _documentRepository.GetAll(context);
         }
 
+        public async Task<List<ExpediteRequestsExtended>> GetAll_Export(DateRange? dateRange = null)
+        {
+            List<ExpediteRequestsExtended> result = new();
+            using ExpediteRequestContext context = await _contextFactory.CreateDbContextAsync();
+            if (dateRange is not null)
+            {
+                result = await _documentRepository.GetBy_RequestExtended(context, (x => x.Created >= dateRange.Start && x.Created <= dateRange.End));
+            }
+            else
+            {
+                result = await GetAll().ToListAsync();
+            }
+            return result;
+        }
+
         public IQueryable<ExpediteRequestsExtended> GetAll_ProductionPlanner()
         {
             ExpediteRequestContext context = _contextFactory.CreateDbContext();
             return _documentRepository.GetAll_ProductionPlanner(context);
+        }
+
+        public async Task<List<ExpediteRequestsExtended>> GetBy_RequestExtended(Expression<Func<ExpediteRequestsExtended, bool>> selector)
+        {
+            using ExpediteRequestContext context = await _contextFactory.CreateDbContextAsync();
+
+            return await _documentRepository.GetBy_RequestExtended(context, selector);
+        }
+
+        public async Task DownloadExcelFile(List<ExpediteRequestsExtended> data, IJSRuntime jsRuntime, ILogger logger)
+        {
+
+            FlatExcelOptions<ExpediteRequestsExtended> excelOptions = new();
+            excelOptions.Items = data;
+            excelOptions.AddHeader(nameof(ExpediteRequestsExtended.Status), "Expedite Status");
+            excelOptions.AddHeader(nameof(ExpediteRequestsExtended.InProgress), "In Progress");
+            excelOptions.AddHeader(nameof(ExpediteRequestsExtended.CreatedBy), "Created By");
+            excelOptions.AddHeader(nameof(ExpediteRequestsExtended.CoNum), "Order Number");
+            excelOptions.AddHeader(nameof(ExpediteRequestsExtended.CoLine), "Line");
+            excelOptions.AddHeader(nameof(ExpediteRequestsExtended.CoRelease), "Release");
+            excelOptions.AddHeader(nameof(ExpediteRequestsExtended.PlanCode), "Planner Code");
+            excelOptions.AddHeader(nameof(ExpediteRequestsExtended.ShipSite), "Ship Site");
+            excelOptions.AddHeader(nameof(ExpediteRequestsExtended.Job), "Job Number");
+            excelOptions.AddHeader(nameof(ExpediteRequestsExtended.Ipn), "IPN");
+            excelOptions.AddHeader(nameof(ExpediteRequestsExtended.IpnDescription), "IPN Description");
+            excelOptions.AddHeader(nameof(ExpediteRequestsExtended.OrderDate), "Order Date");
+            excelOptions.AddHeader(nameof(ExpediteRequestsExtended.CustomerName), "Customer Name");
+            excelOptions.AddHeader(nameof(ExpediteRequestsExtended.QtyOrdered), "Quantity");
+            excelOptions.AddHeader(nameof(ExpediteRequestsExtended.Um), "UOM");
+            excelOptions.AddHeader(nameof(ExpediteRequestsExtended.DueDate), "Due Date");
+            excelOptions.AddHeader(nameof(ExpediteRequestsExtended.ShelfLifeRequirement), "Shelf Life Required");
+            excelOptions.AddHeader(nameof(ExpediteRequestsExtended.PonderosaPack), "Ponderosa Pack");
+            excelOptions.AddHeader(nameof(ExpediteRequestsExtended.CurrentDueDate), "Current Due Date");
+            excelOptions.AddHeader(nameof(ExpediteRequestsExtended.PartialQuantityAccepted), "Partial Accepted");
+            excelOptions.AddHeader(nameof(ExpediteRequestsExtended.PartialQuantity), "Partial Quantity");
+            excelOptions.AddHeader(nameof(ExpediteRequestsExtended.ShipDate), "Request Ship Date");
+            excelOptions.AddHeader(nameof(ExpediteRequestsExtended.Fee), "Expedite Fee");
+            excelOptions.AddHeader(nameof(ExpediteRequestsExtended.Reason), "Reason for Expedite");
+            excelOptions.AddHeader(nameof(ExpediteRequestsExtended.Comments), "Comments");
+            excelOptions.AddHeader(nameof(ExpediteRequestsExtended.Approver), "Approver");
+            excelOptions.AddHeader(nameof(ExpediteRequestsExtended.ApprovalStatus), "Approve Status");
+            excelOptions.AddHeader(nameof(ExpediteRequestsExtended.ApprovalRemarks), "Approver Comments");
+            excelOptions.AddHeader(nameof(ExpediteRequestsExtended.NewShipDate), "New Ship Date");
+            excelOptions.AddHeader(nameof(ExpediteRequestsExtended.Created), "Created Date");
+
+            try
+            {
+                NpoiMemoryStream stream = await CreateFlatExcel.StreamExcelFile<ExpediteRequestsExtended>(excelOptions, logger);
+                using var FileStream = new DotNetStreamReference(stream);
+                string fileName = "ExpediteRequest.xlsx";
+                await jsRuntime.InvokeVoidAsync("downloadFileFromStream", fileName, FileStream);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex.Message);
+            }
         }
 
         public async Task<List<string>>GetAll_SitesFromRequests()

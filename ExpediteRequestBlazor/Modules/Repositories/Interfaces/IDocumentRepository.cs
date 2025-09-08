@@ -1,5 +1,7 @@
 
 
+using System.Linq.Expressions;
+
 namespace ExpediteRequestBlazor.Modules.Repositories.Interfaces
 {
     public interface IDocumentRepository
@@ -7,6 +9,7 @@ namespace ExpediteRequestBlazor.Modules.Repositories.Interfaces
         bool DocumentExists(ExpediteRequestContext context, Document item);
         IQueryable<ExpediteRequestsExtended> GetAll(ExpediteRequestContext context);
         IQueryable<ExpediteRequestsExtended> GetAll_ProductionPlanner(ExpediteRequestContext context);
+        Task<List<ExpediteRequestsExtended>> GetBy_RequestExtended(ExpediteRequestContext context, Expression<Func<ExpediteRequestsExtended, bool>> selector);
         Task<List<string>> GetAll_SitesFromRequests(ExpediteRequestContext context);
         Task Update(ExpediteRequestContext context, Document document);
         Task<Document> Get(ExpediteRequestContext context, Guid Gkey);
