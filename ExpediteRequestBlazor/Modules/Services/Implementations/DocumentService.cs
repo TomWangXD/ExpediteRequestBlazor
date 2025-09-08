@@ -41,7 +41,7 @@ namespace ExpediteRequestBlazor.Modules.Services.Implementations
             }
             else
             {
-                ValidateDocumentExists(document);
+                await ValidateDocumentExists(document);
 
                 document.Modified = DateTime.UtcNow;
                 document.ModifiedBy = _user.Employee.SamaccountName;
@@ -69,9 +69,9 @@ namespace ExpediteRequestBlazor.Modules.Services.Implementations
             }
         }
 
-        public void ValidateDocumentExists(Document item)
+        public async Task ValidateDocumentExists(Document item)
         {
-            using ExpediteRequestContext context = _contextFactory.CreateDbContext();
+            using ExpediteRequestContext context = await _contextFactory.CreateDbContextAsync();
             var result = _documentRepository.DocumentExists(context, item);
             if (!result)
             {
@@ -223,6 +223,12 @@ namespace ExpediteRequestBlazor.Modules.Services.Implementations
             {
                 logger.LogError(ex.Message);
             }
+        }
+
+        public async Task<List<string>>GetAll_SitesFromRequests()
+        {
+            using ExpediteRequestContext context = await _contextFactory.CreateDbContextAsync();
+            return await _documentRepository.GetAll_SitesFromRequests(context);
         }
     }
 }

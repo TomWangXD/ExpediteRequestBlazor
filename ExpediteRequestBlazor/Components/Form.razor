@@ -140,6 +140,7 @@
                 <DxFormLayoutItem Caption="Request Ship Date" ColSpanSm="6" ColSpanMd="6" ColSpanLg="4" ColSpanXl="4" ColSpanXxl="4">
                     <DxDateEdit @bind-Date="Request.ShipDate"
                     SizeMode="SizeMode.Large"
+                    MinDate="DateTime.UtcNow"
                     ReadOnly=false
                     />
                 </DxFormLayoutItem>
@@ -210,23 +211,20 @@
                 @if(Request.Id == 0)
                 {
                     <DxFormLayoutItem CssClass="mb-5" ColSpanSm="6" ColSpanMd="6" ColSpanLg="4" ColSpanXl="4" ColSpanXxl="4">
-                        <DxButton Context="buttonCancel" Enabled="!isLoading" Click="@(() => Cancel())" SizeMode="SizeMode.Large">Cancel</DxButton>
-                    </DxFormLayoutItem>
-
-                    <DxFormLayoutItem CssClass="mb-5" ColSpanSm="6" ColSpanMd="6" ColSpanLg="4" ColSpanXl="4" ColSpanXxl="4">
-                        <DxButton Context="buttonSave" Enabled="!isLoading" Click="@(() => Save())" SizeMode="SizeMode.Large">Save</DxButton>
+                        <DxButton Context="buttonSave" Enabled="!isLoading" Click="@(() => Save())" SizeMode="SizeMode.Large">Submit</DxButton>
                     </DxFormLayoutItem>
                 }
                 else
                 {
                     <DxFormLayoutItem CssClass="mb-5" ColSpanSm="6" ColSpanMd="6" ColSpanLg="4" ColSpanXl="4" ColSpanXxl="4">
-                        <DxButton Context="buttonApprove" Enabled="!isLoading" Click="@(() => Save(ApprovalStatus))" SizeMode="SizeMode.Large">Approve</DxButton>
+                        <DxButton Context="buttonApprove" Enabled="!isLoading" Click="@(() => Save(ApprovalStatus))" SizeMode="SizeMode.Large">Submit</DxButton>
                     </DxFormLayoutItem>
+                }
 
                     <DxFormLayoutItem CssClass="mb-5" ColSpanSm="6" ColSpanMd="6" ColSpanLg="4" ColSpanXl="4" ColSpanXxl="4">
-                        <DxButton Context="buttonDecline" Enabled="!isLoading"  Click="@(() => Save(Status.DECLINED))" SizeMode="SizeMode.Large">Decline</DxButton>
+                        <DxButton Context="buttonCancel" Enabled="!isLoading" Click="@(() => Cancel())" SizeMode="SizeMode.Large">Cancel</DxButton>
                     </DxFormLayoutItem>
-                } 
+
             </DxFormLayout>
         </EditForm>
     </div>
