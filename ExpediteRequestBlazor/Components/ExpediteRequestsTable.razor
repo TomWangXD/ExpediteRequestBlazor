@@ -120,7 +120,7 @@ CloseOnOutsideClick="false">
                     options.KeyExpression = nameof(ExpediteRequestsExtended.Id);
                     options.QueryableSource = documentService.GetAll();
                 });
-                isLoaded = true
+                isLoaded = true;
                 sites = await documentService.GetAll_SitesFromRequests();
             }
         }
