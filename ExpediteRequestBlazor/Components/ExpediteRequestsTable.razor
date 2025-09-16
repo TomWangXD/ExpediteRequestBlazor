@@ -40,14 +40,16 @@ SelectedDataItemChanged=@(selected => ViewForm(selected))>
         <DxGridDataColumn FieldName="@nameof(ExpediteRequestsExtended.CoLine)" Caption="Line" MinWidth="70" />
         <DxGridDataColumn FieldName="@nameof(ExpediteRequestsExtended.CoRelease)" Caption="Release" MinWidth="70" />
         <DxGridDataColumn FieldName="@nameof(ExpediteRequestsExtended.PlanCode)" Caption="Planner Code" MinWidth="70" />
-        <DxGridDataColumn FieldName="@nameof(ExpediteRequestsExtended.ShipSite)" Caption="Ship Site" MinWidth="70">
+        <DxGridDataColumn FieldName="@nameof(ExpediteRequestsExtended.ShipSite)" Caption="Ship Site" MinWidth="100">
             <FilterRowCellTemplate>
                 <DxComboBox TData="string"
-                TValue="string"
-                Data=sites
-                ClearButtonDisplayMode=DataEditorClearButtonDisplayMode.Auto
-                Value="@(context.FilterRowValue?.ToString())"
-                ValueChanged="(string? obj) => context.FilterRowValue = obj" />
+                            TValue="string"
+                            Data="sites"
+                            AllowUserInput="false"
+                            ClearButtonDisplayMode="DataEditorClearButtonDisplayMode.Auto"
+                            NullText="All Sites"
+                            Value="@_selectedShipSite"
+                            ValueChanged="OnShipSiteFilterChanged" />
             </FilterRowCellTemplate>
         </DxGridDataColumn>
         <DxGridDataColumn FieldName="@nameof(ExpediteRequestsExtended.Job)" Caption="Job Number" MinWidth="100" />
@@ -102,6 +104,7 @@ CloseOnOutsideClick="false">
     private EntityInstantFeedbackSource _instantFeedbackSource = null!;
     private IGrid Grid { get; set; }
     private List<string> sites = new();
+    private string? _selectedShipSite;
 
     private DateRange ExportDateRangeFilter { get; set; } = GetDefaultDateRange();
 
@@ -113,21 +116,52 @@ CloseOnOutsideClick="false">
     {
         try
         {
-            if (!isLoaded)
+            if (isLoaded)
             {
-                _instantFeedbackSource = new(options =>
-                {
-                    options.KeyExpression = nameof(ExpediteRequestsExtended.Id);
-                    options.QueryableSource = documentService.GetAll();
-                });
-                isLoaded = true;
-                sites = await documentService.GetAll_SitesFromRequests();
+                return;
             }
+
+            ConfigureInstantFeedbackSource();
+            sites = await documentService.GetAll_SitesFromRequests();
+            isLoaded = true;
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             logger.LogError(ex.ToString());
         }
+    }
+
+    private void ConfigureInstantFeedbackSource()
+    {
+        IQueryable<ExpediteRequestsExtended> query = documentService.GetAll();
+
+        if (!string.IsNullOrWhiteSpace(_selectedShipSite))
+        {
+            query = query.Where(request => request.ShipSite == _selectedShipSite);
+        }
+
+        ReplaceInstantFeedbackSource(query);
+    }
+
+    private void ReplaceInstantFeedbackSource(IQueryable<ExpediteRequestsExtended> query)
+    {
+        EntityInstantFeedbackSource? previousSource = _instantFeedbackSource;
+
+        _instantFeedbackSource = new(options =>
+        {
+            options.KeyExpression = nameof(ExpediteRequestsExtended.Id);
+            options.QueryableSource = query;
+        });
+
+        previousSource?.Dispose();
+    }
+
+    private async Task OnShipSiteFilterChanged(string? shipSite)
+    {
+        _selectedShipSite = string.IsNullOrWhiteSpace(shipSite) ? null : shipSite;
+
+        ConfigureInstantFeedbackSource();
+        await InvokeAsync(StateHasChanged);
     }
 
     private void ViewForm(object proxyObject)
