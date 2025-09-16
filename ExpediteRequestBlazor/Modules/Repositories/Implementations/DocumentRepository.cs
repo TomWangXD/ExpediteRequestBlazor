@@ -69,9 +69,10 @@ namespace ExpediteRequestBlazor.Modules.Repositories.Implementations
 
         public async Task<List<string>> GetAll_SitesFromRequests(ExpediteRequestContext context)
         {
-            return await context.Documents
-                .Where(x => !string.IsNullOrEmpty(x.ShipSite))
-                .Select(x => x.ShipSite.Trim().ToUpper())
+            return await context.ExpediteRequestsExtended
+                .AsNoTracking()
+                .Where(x => x.Status != Status.SUBMITTED && !string.IsNullOrEmpty(x.ShipSite))
+                .Select(x => x.ShipSite.Trim())
                 .Distinct()
                 .OrderBy(x => x)
                 .ToListAsync();
