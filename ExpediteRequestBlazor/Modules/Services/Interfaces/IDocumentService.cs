@@ -13,6 +13,11 @@ namespace ExpediteRequestBlazor.Modules.Services.Interfaces
         Task DownloadExcelFile(List<ExpediteRequestsExtended> data, IJSRuntime jsRuntime, ILogger logger);
         Task ValidateDocumentExists(Document item);
         Task<List<string>> GetAll_SitesFromRequests();
+        Task<List<string>> GetAll_ExpediteStatusFromRequests();
+        Task<List<string>> GetAll_PlannerCodeFromRequests();
+        Task<List<string>> GetAll_SitesFromProductionPlanner();
+        Task<List<string>> GetAll_ExpediteStatusFromProductionPlanner();
+        Task<List<string>> GetAll_PlannerCodeFromProductionPlanner();
         Task UpdateObjectStatus(Document document, ElsaDocument elsaDocument);
         Task<T> ParseWorkflowEngineResponseAsync<T>(HttpContent content);
         Task<HttpContent> GetWorkflowEngineResponseAsync<T>(T item);

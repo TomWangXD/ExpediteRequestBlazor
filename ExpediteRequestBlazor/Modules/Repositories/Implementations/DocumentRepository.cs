@@ -56,6 +56,37 @@ namespace ExpediteRequestBlazor.Modules.Repositories.Implementations
 
             return result.AsQueryable();
         }
+        public async Task<List<string>> GetAll_SitesFromRequests(ExpediteRequestContext context)
+        {
+            return await context.ExpediteRequestsExtended
+                .AsNoTracking()
+                .Where(x => x.Status != Status.SUBMITTED && !string.IsNullOrEmpty(x.ShipSite))
+                .Select(x => x.ShipSite.Trim())
+                .Distinct()
+                .OrderBy(x => x)
+                .ToListAsync();
+        }
+
+        public async Task<List<string>> GetAll_ExpediteStatusFromRequests(ExpediteRequestContext context)
+        {
+            return await context.ExpediteRequestsExtended
+                .AsNoTracking()
+                .Where(x => x.Status != Status.SUBMITTED && !string.IsNullOrEmpty(x.Status))
+                .Select(x => x.Status.Trim())
+                .Distinct()
+                .OrderBy(x => x)
+                .ToListAsync();
+        }
+        public async Task<List<string>> GetAll_PlannerCodeFromRequests(ExpediteRequestContext context)
+        {
+            return await context.ExpediteRequestsExtended
+                .AsNoTracking()
+                .Where(x => x.Status != Status.SUBMITTED && !string.IsNullOrEmpty(x.PlanCode))
+                .Select(x => x.PlanCode.Trim())
+                .Distinct()
+                .OrderBy(x => x)
+                .ToListAsync();
+        }
 
         public IQueryable<ExpediteRequestsExtended> GetAll_ProductionPlanner(ExpediteRequestContext context)
         {
@@ -67,12 +98,32 @@ namespace ExpediteRequestBlazor.Modules.Repositories.Implementations
             return result.AsQueryable();
         }
 
-        public async Task<List<string>> GetAll_SitesFromRequests(ExpediteRequestContext context)
+        public async Task<List<string>> GetAll_SitesFromProductionPlanner(ExpediteRequestContext context)
         {
             return await context.ExpediteRequestsExtended
                 .AsNoTracking()
-                .Where(x => x.Status != Status.SUBMITTED && !string.IsNullOrEmpty(x.ShipSite))
+                .Where(x => x.Status == Status.AWAITING_PRODUCTION && !string.IsNullOrEmpty(x.ShipSite))
                 .Select(x => x.ShipSite.Trim())
+                .Distinct()
+                .OrderBy(x => x)
+                .ToListAsync();
+        }
+        public async Task<List<string>> GetAll_ExpediteStatusFromProductionPlanner(ExpediteRequestContext context)
+        {
+            return await context.ExpediteRequestsExtended
+                .AsNoTracking()
+                .Where(x => x.Status == Status.AWAITING_PRODUCTION && !string.IsNullOrEmpty(x.Status))
+                .Select(x => x.Status.Trim())
+                .Distinct()
+                .OrderBy(x => x)
+                .ToListAsync();
+        }
+        public async Task<List<string>> GetAll_PlannerCodeFromProductionPlanner(ExpediteRequestContext context)
+        {
+            return await context.ExpediteRequestsExtended
+                .AsNoTracking()
+                .Where(x => x.Status == Status.AWAITING_PRODUCTION && !string.IsNullOrEmpty(x.PlanCode))
+                .Select(x => x.PlanCode.Trim())
                 .Distinct()
                 .OrderBy(x => x)
                 .ToListAsync();

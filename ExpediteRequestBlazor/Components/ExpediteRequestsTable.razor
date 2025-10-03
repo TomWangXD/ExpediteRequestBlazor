@@ -33,13 +33,35 @@ AllowSelectRowByClick=true
 SelectedDataItemChanged=@(selected => ViewForm(selected))>
 
     <Columns>
-        <DxGridDataColumn FieldName="@nameof(ExpediteRequestsExtended.Status)" Caption="Expedite Status" MinWidth="100" />
+        <DxGridDataColumn FieldName="@nameof(ExpediteRequestsExtended.Status)" Caption="Expedite Status" MinWidth="100">
+            <FilterRowCellTemplate>
+                <DxComboBox TData="string"
+                            TValue="string"
+                            Data="expediteStatus"
+                            AllowUserInput="false"
+                            ClearButtonDisplayMode="DataEditorClearButtonDisplayMode.Auto"
+                            NullText="All Status"
+                            Value="@_selectedExpediteStatus"
+                            ValueChanged="OnExpediteStatusFilterChanged" />
+            </FilterRowCellTemplate>
+        </DxGridDataColumn>
         <DxGridDataColumn FieldName="@nameof(ExpediteRequestsExtended.InProgress)" Caption="In Progress" MinWidth="100" />
         <DxGridDataColumn FieldName="@nameof(ExpediteRequestsExtended.CreatedBy)" Caption="Created By" MinWidth="220" />
         <DxGridDataColumn FieldName="@nameof(ExpediteRequestsExtended.CoNum)" Caption="Order Number" MinWidth="100" />
         <DxGridDataColumn FieldName="@nameof(ExpediteRequestsExtended.CoLine)" Caption="Line" MinWidth="70" />
         <DxGridDataColumn FieldName="@nameof(ExpediteRequestsExtended.CoRelease)" Caption="Release" MinWidth="70" />
-        <DxGridDataColumn FieldName="@nameof(ExpediteRequestsExtended.PlanCode)" Caption="Planner Code" MinWidth="70" />
+        <DxGridDataColumn FieldName="@nameof(ExpediteRequestsExtended.PlanCode)" Caption="Planner Code" MinWidth="100">
+            <FilterRowCellTemplate>
+                <DxComboBox TData="string"
+                            TValue="string"
+                            Data="plannerCode"
+                            AllowUserInput="false"
+                            ClearButtonDisplayMode="DataEditorClearButtonDisplayMode.Auto"
+                            NullText="All Planner Code"
+                            Value="@_selectedPlannerCode"
+                            ValueChanged="OnPlannerCodeFilterChanged" />
+            </FilterRowCellTemplate>
+        </DxGridDataColumn>
         <DxGridDataColumn FieldName="@nameof(ExpediteRequestsExtended.ShipSite)" Caption="Ship Site" MinWidth="100">
             <FilterRowCellTemplate>
                 <DxComboBox TData="string"
@@ -104,7 +126,11 @@ CloseOnOutsideClick="false">
     private EntityInstantFeedbackSource _instantFeedbackSource = null!;
     private IGrid Grid { get; set; }
     private List<string> sites = new();
+    private List<string> expediteStatus = new();
+    private List<string> plannerCode = new();
     private string? _selectedShipSite;
+    private string? _selectedExpediteStatus;
+    private string? _selectedPlannerCode;
 
     private DateRange ExportDateRangeFilter { get; set; } = GetDefaultDateRange();
 
@@ -123,6 +149,9 @@ CloseOnOutsideClick="false">
 
             ConfigureInstantFeedbackSource();
             sites = await documentService.GetAll_SitesFromRequests();
+            expediteStatus = await documentService.GetAll_ExpediteStatusFromRequests();
+            plannerCode = await documentService.GetAll_PlannerCodeFromRequests();
+
             isLoaded = true;
         }
         catch (Exception ex)
@@ -139,6 +168,16 @@ CloseOnOutsideClick="false">
         {
             query = query.Where(request => request.ShipSite == _selectedShipSite);
         }
+
+        if (!string.IsNullOrWhiteSpace(_selectedExpediteStatus))
+        {
+            query = query.Where(request => request.Status == _selectedExpediteStatus);
+        }
+        if (!string.IsNullOrWhiteSpace(_selectedPlannerCode))
+        {
+            query = query.Where(request => request.PlanCode == _selectedPlannerCode);
+        }
+
 
         ReplaceInstantFeedbackSource(query);
     }
@@ -159,6 +198,20 @@ CloseOnOutsideClick="false">
     private async Task OnShipSiteFilterChanged(string? shipSite)
     {
         _selectedShipSite = string.IsNullOrWhiteSpace(shipSite) ? null : shipSite;
+
+        ConfigureInstantFeedbackSource();
+        await InvokeAsync(StateHasChanged);
+    }
+    private async Task OnExpediteStatusFilterChanged(string? expediteStatus)
+    {
+        _selectedExpediteStatus = string.IsNullOrWhiteSpace(expediteStatus) ? null : expediteStatus;
+
+        ConfigureInstantFeedbackSource();
+        await InvokeAsync(StateHasChanged);
+    }
+    private async Task OnPlannerCodeFilterChanged(string? plannerCode)
+    {
+        _selectedPlannerCode = string.IsNullOrWhiteSpace(plannerCode) ? null : plannerCode;
 
         ConfigureInstantFeedbackSource();
         await InvokeAsync(StateHasChanged);

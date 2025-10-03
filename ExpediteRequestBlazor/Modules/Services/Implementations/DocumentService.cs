@@ -230,5 +230,30 @@ namespace ExpediteRequestBlazor.Modules.Services.Implementations
             using ExpediteRequestContext context = await _contextFactory.CreateDbContextAsync();
             return await _documentRepository.GetAll_SitesFromRequests(context);
         }
+        public async Task<List<string>> GetAll_ExpediteStatusFromRequests()
+        {
+            using ExpediteRequestContext context = await _contextFactory.CreateDbContextAsync();
+            return await _documentRepository.GetAll_ExpediteStatusFromRequests(context);
+        }
+        public async Task<List<string>> GetAll_PlannerCodeFromRequests()
+        {
+            using ExpediteRequestContext context = await _contextFactory.CreateDbContextAsync();
+            return await _documentRepository.GetAll_PlannerCodeFromRequests(context);
+        }
+        public async Task<List<string>> GetAll_SitesFromProductionPlanner()
+        {
+            using ExpediteRequestContext context = await _contextFactory.CreateDbContextAsync();
+            return await _documentRepository.GetAll_SitesFromProductionPlanner(context);
+        }
+        public async Task<List<string>> GetAll_ExpediteStatusFromProductionPlanner()
+        {
+            using ExpediteRequestContext context = await _contextFactory.CreateDbContextAsync();
+            return await _documentRepository.GetAll_ExpediteStatusFromProductionPlanner(context);
+        }
+        public async Task<List<string>> GetAll_PlannerCodeFromProductionPlanner()
+        {
+            using ExpediteRequestContext context = await _contextFactory.CreateDbContextAsync();
+            return await _documentRepository.GetAll_PlannerCodeFromProductionPlanner(context);
+        }
     }
 }
