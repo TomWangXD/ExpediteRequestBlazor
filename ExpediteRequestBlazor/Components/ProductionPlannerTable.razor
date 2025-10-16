@@ -38,6 +38,7 @@
             </FilterRowCellTemplate>
         </DxGridDataColumn>
         <DxGridDataColumn FieldName="@nameof(ExpediteRequestsExtended.InProgress)" Caption="In Progress" MinWidth="100" />
+        <DxGridDataColumn FieldName="@nameof(ExpediteRequestsExtended.Created)" SortIndex="0" SortOrder="GridColumnSortOrder.Descending" Caption="Created Date" MinWidth="90" DisplayFormat="g" />
         <DxGridDataColumn FieldName="@nameof(ExpediteRequestsExtended.CreatedBy)" Caption="Created By" MinWidth="120" />
         <DxGridDataColumn FieldName="@nameof(ExpediteRequestsExtended.CoNum)" Caption="Order Number" MinWidth="100" />
         <DxGridDataColumn FieldName="@nameof(ExpediteRequestsExtended.CoLine)" Caption="Line" MinWidth="70" />
@@ -91,8 +92,7 @@
         <DxGridDataColumn FieldName="@nameof(ExpediteRequestsExtended.ApprovalStatus)" Caption="Approve Status" MinWidth="100" />
         <DxGridDataColumn FieldName="@nameof(ExpediteRequestsExtended.ApprovalRemarks)" Caption="Approver Comments" MinWidth="150" />
 
-        <DxGridDataColumn FieldName="@nameof(ExpediteRequestsExtended.NewShipDate)" Caption="New Ship Date" MinWidth="90" DisplayFormat="d" />
-        <DxGridDataColumn FieldName="@nameof(ExpediteRequestsExtended.Created)" SortIndex="0" SortOrder="GridColumnSortOrder.Descending" Caption="Created Date" MinWidth="90" DisplayFormat="g" />
+        <DxGridDataColumn FieldName="@nameof(ExpediteRequestsExtended.NewShipDate)" Caption="New Ship Date" MinWidth="90" DisplayFormat="d" />      
     </Columns>
 
 </DxGrid>
