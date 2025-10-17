@@ -46,6 +46,20 @@ SelectedDataItemChanged=@(selected => ViewForm(selected))>
             </FilterRowCellTemplate>
         </DxGridDataColumn>
         <DxGridDataColumn FieldName="@nameof(ExpediteRequestsExtended.InProgress)" Caption="In Progress" MinWidth="100" />
+        <DxGridDataColumn FieldName="@nameof(ExpediteRequestsExtended.CreatedBy)"
+                          Caption="Created By"
+                          MinWidth="120">
+            <CellDisplayTemplate Context="cell">
+                @{
+                    var full = Convert.ToString(cell.Value);
+                    var idx = string.IsNullOrEmpty(full) ? -1 : full.LastIndexOf('\\'); // backslash
+                    var display = (idx >= 0 && idx < full!.Length - 1)
+                    ? full.Substring(idx + 1)
+                    : full;
+                }
+                @display
+            </CellDisplayTemplate>
+        </DxGridDataColumn>
         <DxGridDataColumn FieldName="@nameof(ExpediteRequestsExtended.Created)" SortIndex="0" SortOrder="GridColumnSortOrder.Descending" Caption="Created Date" MinWidth="90" DisplayFormat="g" />
         <DxGridDataColumn FieldName="@nameof(ExpediteRequestsExtended.CreatedBy)" Caption="Created By" MinWidth="220" />
         <DxGridDataColumn FieldName="@nameof(ExpediteRequestsExtended.CoNum)" Caption="Order Number" MinWidth="100" />
