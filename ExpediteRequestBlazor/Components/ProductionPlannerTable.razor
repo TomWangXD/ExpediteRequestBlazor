@@ -9,6 +9,12 @@
 @inject NavigationManager navigationManager
 @inject IDocumentService documentService
 
+@inject Indium.Common.Models.User commonUser
+@inject IDbContextFactory<CommonContext> CommonDBFactory
+@inject ExpediteRequestBlazor.EFModels.Extensions.User user
+
+@inject ISiteRepository siteRepository
+
 @implements IDisposable
 
 <DxGrid Data="_instantFeedbackSource"
@@ -39,7 +45,18 @@
         </DxGridDataColumn>
         <DxGridDataColumn FieldName="@nameof(ExpediteRequestsExtended.InProgress)" Caption="In Progress" MinWidth="100" />
         <DxGridDataColumn FieldName="@nameof(ExpediteRequestsExtended.Created)" SortIndex="0" SortOrder="GridColumnSortOrder.Descending" Caption="Created Date" MinWidth="90" DisplayFormat="g" />
-        <DxGridDataColumn FieldName="@nameof(ExpediteRequestsExtended.CreatedBy)" Caption="Created By" MinWidth="120" />
+        <DxGridDataColumn FieldName="@nameof(ExpediteRequestsExtended.CreatedBy)" Caption="Created By" MinWidth="120" >
+          <CellDisplayTemplate Context="cell">
+                @{
+                    var full = Convert.ToString(cell.Value);
+                    var idx = string.IsNullOrEmpty(full) ? -1 : full.LastIndexOf('\\'); // backslash
+                    var display = (idx >= 0 && idx < full!.Length - 1)
+                    ? full.Substring(idx + 1)
+                    : full;
+                }
+                @display
+            </CellDisplayTemplate>
+        </DxGridDataColumn>
         <DxGridDataColumn FieldName="@nameof(ExpediteRequestsExtended.CoNum)" Caption="Order Number" MinWidth="100" />
         <DxGridDataColumn FieldName="@nameof(ExpediteRequestsExtended.CoLine)" Caption="Line" MinWidth="70" />
         <DxGridDataColumn FieldName="@nameof(ExpediteRequestsExtended.CoRelease)" Caption="Release" MinWidth="70" />
@@ -55,7 +72,7 @@
                             ValueChanged="OnPlannerCodeFilterChanged" />
             </FilterRowCellTemplate>
         </DxGridDataColumn>
-        <DxGridDataColumn FieldName="@nameof(ExpediteRequestsExtended.ShipSite)" Caption="Ship Site" MinWidth="70">
+        <DxGridDataColumn FieldName="@nameof(ExpediteRequestsExtended.ShipSite)" Caption="Ship Site" MinWidth="100">
             <FilterRowCellTemplate>
                 <DxComboBox TData="string"
                             TValue="string"
@@ -117,6 +134,11 @@
             {
                 return;
             }
+
+            using CommonContext common = await CommonDBFactory.CreateDbContextAsync();
+            _selectedShipSite = await siteRepository.GetSiteBySiteId(common, user.UserSite);
+            // _selectedShipSite = common.CmSiteMasters.FirstOrDefault(x => x.Id == (user.UserSite ?? 0))?.SiteCode
+            // ?? throw new ArgumentNullException("The user does not have a valid Site!");
 
             ConfigureInstantFeedbackSource();
             sites = await documentService.GetAll_SitesFromProductionPlanner();

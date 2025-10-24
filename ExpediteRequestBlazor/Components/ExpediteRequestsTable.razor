@@ -3,6 +3,7 @@
 @using DevExpress.Data.Linq;
 @using ExpediteRequestBlazor.DataTransferObjects;
 @using ExpediteRequestBlazor.EFModels.ViewModels
+@using ExpediteRequestBlazor.Modules.Repositories 
 @using ExpediteRequestBlazor.Modules.Services.Interfaces
 @using Microsoft.EntityFrameworkCore
 @using MudBlazor
@@ -12,6 +13,11 @@
 @inject IDocumentService documentService
 @inject IJSRuntime jsRuntime
 @inject ISnackbar snackbar
+@inject ISiteRepository siteRepository
+
+@inject Indium.Common.Models.User commonUser
+@inject IDbContextFactory<CommonContext> CommonDBFactory
+@inject ExpediteRequestBlazor.EFModels.Extensions.User user
 
 @implements IDisposable
 
@@ -46,6 +52,7 @@ SelectedDataItemChanged=@(selected => ViewForm(selected))>
             </FilterRowCellTemplate>
         </DxGridDataColumn>
         <DxGridDataColumn FieldName="@nameof(ExpediteRequestsExtended.InProgress)" Caption="In Progress" MinWidth="100" />
+        <DxGridDataColumn FieldName="@nameof(ExpediteRequestsExtended.Created)" SortIndex="0" SortOrder="GridColumnSortOrder.Descending" Caption="Created Date" MinWidth="90" DisplayFormat="g" />
         <DxGridDataColumn FieldName="@nameof(ExpediteRequestsExtended.CreatedBy)"
                           Caption="Created By"
                           MinWidth="120">
@@ -59,9 +66,7 @@ SelectedDataItemChanged=@(selected => ViewForm(selected))>
                 }
                 @display
             </CellDisplayTemplate>
-        </DxGridDataColumn>
-        <DxGridDataColumn FieldName="@nameof(ExpediteRequestsExtended.Created)" SortIndex="0" SortOrder="GridColumnSortOrder.Descending" Caption="Created Date" MinWidth="90" DisplayFormat="g" />
-        <DxGridDataColumn FieldName="@nameof(ExpediteRequestsExtended.CreatedBy)" Caption="Created By" MinWidth="220" />
+        </DxGridDataColumn>       
         <DxGridDataColumn FieldName="@nameof(ExpediteRequestsExtended.CoNum)" Caption="Order Number" MinWidth="100" />
         <DxGridDataColumn FieldName="@nameof(ExpediteRequestsExtended.CoLine)" Caption="Line" MinWidth="70" />
         <DxGridDataColumn FieldName="@nameof(ExpediteRequestsExtended.CoRelease)" Caption="Release" MinWidth="70" />
@@ -161,6 +166,11 @@ CloseOnOutsideClick="false">
             {
                 return;
             }
+
+             using CommonContext common = await CommonDBFactory.CreateDbContextAsync();                   
+             _selectedShipSite = await siteRepository.GetSiteBySiteId(common, user.UserSite);
+             // _selectedShipSite = common.CmSiteMasters. FirstOrDefault(x => x.Id == (user.UserSite ?? 0))?.SiteCode
+             // ?? throw new ArgumentNullException("The user does not have a valid Site!");
 
             ConfigureInstantFeedbackSource();
             sites = await documentService.GetAll_SitesFromRequests();
