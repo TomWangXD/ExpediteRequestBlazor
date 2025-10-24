@@ -3,6 +3,7 @@
 @using DevExpress.Data.Linq;
 @using ExpediteRequestBlazor.DataTransferObjects;
 @using ExpediteRequestBlazor.EFModels.ViewModels
+@using ExpediteRequestBlazor.Modules.Repositories 
 @using ExpediteRequestBlazor.Modules.Services.Interfaces
 @using Microsoft.EntityFrameworkCore
 @using MudBlazor
@@ -12,6 +13,7 @@
 @inject IDocumentService documentService
 @inject IJSRuntime jsRuntime
 @inject ISnackbar snackbar
+@inject ISiteRepository siteRepository
 
 @inject Indium.Common.Models.User commonUser
 @inject IDbContextFactory<CommonContext> CommonDBFactory
@@ -165,9 +167,10 @@ CloseOnOutsideClick="false">
                 return;
             }
 
-            using CommonContext common = await CommonDBFactory.CreateDbContextAsync();
-            _selectedShipSite = common.CmSiteMasters.FirstOrDefault(x => x.Id == (user.UserSite ?? 0))?.SiteCode
-            ?? throw new ArgumentNullException("The user does not have a valid Site!");
+             using CommonContext common = await CommonDBFactory.CreateDbContextAsync();                   
+             _selectedShipSite = await siteRepository.GetSiteBySiteId(common, user.UserSite);
+             // _selectedShipSite = common.CmSiteMasters. FirstOrDefault(x => x.Id == (user.UserSite ?? 0))?.SiteCode
+             // ?? throw new ArgumentNullException("The user does not have a valid Site!");
 
             ConfigureInstantFeedbackSource();
             sites = await documentService.GetAll_SitesFromRequests();

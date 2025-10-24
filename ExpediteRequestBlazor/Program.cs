@@ -39,6 +39,7 @@ builder.Services.AddScoped<IApprovalRepository, ApprovalRepository>();
 builder.Services.AddScoped<IDocumentRepository, DocumentRepository>();
 builder.Services.AddScoped<IDropdownRepository, DropdownRepository>();
 builder.Services.AddScoped<IExpediteRequestRepository, ExpediteRequestRepository>();
+builder.Services.AddScoped<ISiteRepository, SiteRepository>();
 
 builder.Services.AddScoped<IDocumentService, DocumentService>();
 builder.Services.AddScoped<IDropdownService, DropdownService>();

@@ -13,6 +13,8 @@
 @inject IDbContextFactory<CommonContext> CommonDBFactory
 @inject ExpediteRequestBlazor.EFModels.Extensions.User user
 
+@inject ISiteRepository siteRepository
+
 @implements IDisposable
 
 <DxGrid Data="_instantFeedbackSource"
@@ -134,8 +136,9 @@
             }
 
             using CommonContext common = await CommonDBFactory.CreateDbContextAsync();
-            _selectedShipSite = common.CmSiteMasters.FirstOrDefault(x => x.Id == (user.UserSite ?? 0))?.SiteCode
-            ?? throw new ArgumentNullException("The user does not have a valid Site!");
+            _selectedShipSite = await siteRepository.GetSiteBySiteId(common, user.UserSite);
+            // _selectedShipSite = common.CmSiteMasters.FirstOrDefault(x => x.Id == (user.UserSite ?? 0))?.SiteCode
+            // ?? throw new ArgumentNullException("The user does not have a valid Site!");
 
             ConfigureInstantFeedbackSource();
             sites = await documentService.GetAll_SitesFromProductionPlanner();
