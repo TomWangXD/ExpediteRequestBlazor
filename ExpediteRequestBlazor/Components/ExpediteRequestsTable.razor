@@ -26,13 +26,14 @@
         Export
     </MudButton>
 
-    <MudSwitch T="bool" Label="Show Approved Request" Color="Color.Primary"
-               Checked="@_showApprovedRequests"
-               CheckedChanged="OnShowApprovedRequestsChanged">
+     <MudSwitch T="bool" Label="Show Approved Request" Color="Color.Primary"
+               @bind-Checked="_showApprovedRequests"
+               OnChanged="OnShowApprovedRequestsChanged">
     </MudSwitch>
+
     <MudSwitch T="bool" Label="Show Declined Request" Color="Color.Primary"
-               Checked="@_showDeclinedRequests"
-               CheckedChanged="OnShowDeclinedRequestsChanged">
+               @bind-Checked="_showDeclinedRequests"
+               OnChanged="OnShowDeclinedRequestsChanged">
     </MudSwitch>
 </MudStack>
 
@@ -179,6 +180,7 @@ CloseOnOutsideClick="false">
     private const string DeclinedStatusValue = "Desclined";
 
 
+
     protected override async Task OnInitializedAsync()
     {
         try
@@ -252,6 +254,15 @@ CloseOnOutsideClick="false">
         ConfigureInstantFeedbackSource();
         await InvokeAsync(StateHasChanged);
     }
+
+    private async Task OnShowDeclinedRequestsChanged(bool? value)
+    {
+        _showDeclinedRequests = value ?? false;
+
+        ConfigureInstantFeedbackSource();
+        await InvokeAsync(StateHasChanged);
+    }
+
 
     private async Task OnShowDeclinedRequestsChanged(bool value)
     {
