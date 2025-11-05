@@ -26,12 +26,14 @@
         Export
     </MudButton>
 
-    <MudSwitch T="bool" Label="Show Approved Request" Color="Color.Primary">
+    <MudSwitch T="bool" Label="Show Approved Request" Color="Color.Primary"
+               Checked="@_showApprovedRequests"
+               CheckedChanged="OnShowApprovedRequestsChanged">
     </MudSwitch>
-
-    <MudSwitch T="bool" Label="Show Declined Request" Color="Color.Primary">
+    <MudSwitch T="bool" Label="Show Declined Request" Color="Color.Primary"
+               Checked="@_showDeclinedRequests"
+               CheckedChanged="OnShowDeclinedRequestsChanged">
     </MudSwitch>
-
 </MudStack>
 
 
@@ -170,6 +172,13 @@ CloseOnOutsideClick="false">
     private bool isLoaded = false;
     private bool isExporting = false;
 
+    private bool _showApprovedRequests;
+    private bool _showDeclinedRequests;
+
+    private const string ApprovedStatusValue = "Approve Total";
+    private const string DeclinedStatusValue = "Desclined";
+
+
     protected override async Task OnInitializedAsync()
     {
         try
@@ -197,6 +206,8 @@ CloseOnOutsideClick="false">
         }
     }
 
+
+
     private void ConfigureInstantFeedbackSource()
     {
         IQueryable<ExpediteRequestsExtended> query = documentService.GetAll();
@@ -215,9 +226,41 @@ CloseOnOutsideClick="false">
             query = query.Where(request => request.PlanCode == _selectedPlannerCode);
         }
 
+        if (_showApprovedRequests && _showDeclinedRequests)
+        {
+            query = query.Where(request => request.ApprovalStatus == ApprovedStatusValue
+                                           || request.ApprovalStatus == DeclinedStatusValue);
+        }
+        else if (_showApprovedRequests)
+        {
+            query = query.Where(request => request.ApprovalStatus == ApprovedStatusValue);
+        }
+        else if (_showDeclinedRequests)
+        {
+            query = query.Where(request => request.ApprovalStatus == DeclinedStatusValue);
+        }
+
 
         ReplaceInstantFeedbackSource(query);
     }
+
+
+    private async Task OnShowApprovedRequestsChanged(bool value)
+    {
+        _showApprovedRequests = value;
+
+        ConfigureInstantFeedbackSource();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task OnShowDeclinedRequestsChanged(bool value)
+    {
+        _showDeclinedRequests = value;
+
+        ConfigureInstantFeedbackSource();
+        await InvokeAsync(StateHasChanged);
+    }
+
 
     private void ReplaceInstantFeedbackSource(IQueryable<ExpediteRequestsExtended> query)
     {
